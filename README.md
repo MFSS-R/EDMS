@@ -1,151 +1,153 @@
-# 实验数据管理系统 (EDMS)
+﻿# 瀹為獙鏁版嵁绠＄悊绯荤粺 (EDMS)
 
-一套专为材料合成实验设计的数据管理系统，采用 React + Django 前后端分离架构。
+涓€濂椾笓涓烘潗鏂欏悎鎴愬疄楠岃璁＄殑鏁版嵁绠＄悊绯荤粺锛岄噰鐢?React + Django 鍓嶅悗绔垎绂绘灦鏋勩€?
+## 鍔熻兘鐗圭偣
 
-## 功能特点
+- **椤圭洰绠＄悊**锛氬垱寤哄拰绠＄悊澶氫釜鐮旂┒椤圭洰
+- **鏍峰搧绠＄悊**锛氱伒娲荤殑鏍峰搧缂栧彿绯荤粺锛屾敮鎸佸姩鎬佸埗澶囨潯浠?- **娴嬭瘯鏁版嵁绠＄悊**锛氬姩鎬佹祴璇曠被鍨嬶紝鏀寔澶氭枃浠朵笂浼?- **鏁版嵁瀵煎嚭**锛氭敮鎸佸鍑烘牱鍝佸垪琛ㄥ拰娴嬭瘯鏁版嵁涓篍xcel鏍煎紡
+- **鏉冮檺鎺у埗**锛氱敤鎴峰彧鑳借闂嚜宸卞垱寤虹殑鏁版嵁
+- **鏂囦欢鏍戝鑸?*锛氱洿瑙傜殑鏍戝舰缁撴瀯娴忚鏁版嵁
 
-- **项目管理**：创建和管理多个研究项目
-- **样品管理**：灵活的样品编号系统，支持动态制备条件
-- **测试数据管理**：动态测试类型，支持多文件上传
-- **数据导出**：支持导出样品列表和测试数据为Excel格式
-- **权限控制**：用户只能访问自己创建的数据
-- **文件树导航**：直观的树形结构浏览数据
+## 鎶€鏈爤
 
-## 技术栈
-
-### 后端
+### 鍚庣
 - Django 4.2 LTS
 - Django REST Framework
-- JWT认证
+- JWT璁よ瘉
 - SQLite / PostgreSQL
 
-### 前端
+### 鍓嶇
 - React 18
 - Ant Design 5
 - React Router 6
-- Zustand (状态管理)
-- React Query (数据获取)
+- Zustand (鐘舵€佺鐞?
+- React Query (鏁版嵁鑾峰彇)
 - Axios
 
-## 项目结构
+## 椤圭洰缁撴瀯
 
 ```
 edms/
-├── backend/                # Django后端
-│   ├── manage.py
-│   ├── requirements.txt
-│   ├── .env.example
-│   ├── edms/               # 项目配置
-│   ├── apps/               # 应用模块
-│   │   ├── users/          # 用户管理
-│   │   ├── projects/       # 项目管理
-│   │   ├── samples/        # 样品管理
-│   │   └── tests/          # 测试数据管理
-│   └── media/              # 上传文件
-├── frontend/               # React前端
-│   ├── package.json
-│   ├── .env.example
-│   └── src/
-│       ├── components/     # 公共组件
-│       ├── pages/          # 页面组件
-│       ├── services/       # API服务
-│       ├── store/          # 状态管理
-│       └── utils/          # 工具函数
-├── docker-compose.yml
-├── Dockerfile.backend
-├── Dockerfile.frontend
-└── README.md
+鈹溾攢鈹€ backend/                # Django鍚庣
+鈹?  鈹溾攢鈹€ manage.py
+鈹?  鈹溾攢鈹€ requirements.txt
+鈹?  鈹溾攢鈹€ .env.example
+鈹?  鈹溾攢鈹€ edms/               # 椤圭洰閰嶇疆
+鈹?  鈹溾攢鈹€ apps/               # 搴旂敤妯″潡
+鈹?  鈹?  鈹溾攢鈹€ users/          # 鐢ㄦ埛绠＄悊
+鈹?  鈹?  鈹溾攢鈹€ projects/       # 椤圭洰绠＄悊
+鈹?  鈹?  鈹溾攢鈹€ samples/        # 鏍峰搧绠＄悊
+鈹?  鈹?  鈹斺攢鈹€ tests/          # 娴嬭瘯鏁版嵁绠＄悊
+鈹?  鈹斺攢鈹€ media/              # 涓婁紶鏂囦欢
+鈹溾攢鈹€ frontend/               # React鍓嶇
+鈹?  鈹溾攢鈹€ package.json
+鈹?  鈹溾攢鈹€ .env.example
+鈹?  鈹斺攢鈹€ src/
+鈹?      鈹溾攢鈹€ components/     # 鍏叡缁勪欢
+鈹?      鈹溾攢鈹€ pages/          # 椤甸潰缁勪欢
+鈹?      鈹溾攢鈹€ services/       # API鏈嶅姟
+鈹?      鈹溾攢鈹€ store/          # 鐘舵€佺鐞?鈹?      鈹斺攢鈹€ utils/          # 宸ュ叿鍑芥暟
+鈹溾攢鈹€ docker-compose.yml
+鈹溾攢鈹€ Dockerfile.backend
+鈹溾攢鈹€ Dockerfile.frontend
+鈹斺攢鈹€ README.md
 ```
 
-## 本地开发
+## Local Launcher
 
-### 后端设置
+For Windows local development, you can use the root scripts:
 
-1. 创建虚拟环境并安装依赖：
+```bat
+start_services.bat
+```
+
+The launcher will:
+- verify `backend/`, `frontend/`, `venv/`, and `npm`
+- auto-create missing `.env` files from `.env.example`
+- run `python manage.py check`
+- run `python manage.py migrate`
+- verify ports `3000` and `8000` are free
+- start backend on `http://127.0.0.1:3000`
+- start frontend on `http://127.0.0.1:8000`
+- write logs to `logs\backend.log` and `logs\frontend.log`
+- open the frontend automatically in your browser
+
+To stop local services quickly, use:
+
+```bat
+stop_services.bat
+```
+
+## 鏈湴寮€鍙?
+### 鍚庣璁剧疆
+
+1. 鍒涘缓铏氭嫙鐜骞跺畨瑁呬緷璧栵細
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
-# 或
-venv\Scripts\activate  # Windows
+# 鎴?venv\Scripts\activate  # Windows
 
 pip install -r backend/requirements.txt
 ```
 
-2. 配置环境变量：
-```bash
+2. 閰嶇疆鐜鍙橀噺锛?```bash
 cp backend/.env.example backend/.env
-# 编辑 .env 文件，设置 SECRET_KEY 等配置
-```
+# 缂栬緫 .env 鏂囦欢锛岃缃?SECRET_KEY 绛夐厤缃?```
 
-3. 运行数据库迁移：
+3. 杩愯鏁版嵁搴撹縼绉伙細
 ```bash
 cd backend
 python manage.py migrate
-python manage.py createsuperuser  # 创建管理员账户
-python manage.py runserver
+python manage.py createsuperuser  # 鍒涘缓绠＄悊鍛樿处鎴?python manage.py runserver
 ```
 
-后端服务将在 http://localhost:8000 运行，API文档可通过 http://localhost:8000/swagger/ 访问。
+鍚庣鏈嶅姟灏嗗湪 http://localhost:8000 杩愯锛孉PI鏂囨。鍙€氳繃 http://localhost:8000/swagger/ 璁块棶銆?
+### 鍓嶇璁剧疆
 
-### 前端设置
-
-1. 安装依赖：
-```bash
+1. 瀹夎渚濊禆锛?```bash
 cd frontend
 npm install
 ```
 
-2. 配置环境变量：
-```bash
+2. 閰嶇疆鐜鍙橀噺锛?```bash
 cp .env.example .env
-# 根据需要修改配置
-```
+# 鏍规嵁闇€瑕佷慨鏀归厤缃?```
 
-3. 启动开发服务器：
-```bash
+3. 鍚姩寮€鍙戞湇鍔″櫒锛?```bash
 npm run dev
 ```
 
-前端服务将在 http://localhost:3000 运行。
+鍓嶇鏈嶅姟灏嗗湪 http://localhost:3000 杩愯銆?
+## Docker閮ㄧ讲
 
-## Docker部署
-
-1. 配置环境变量：
-```bash
+1. 閰嶇疆鐜鍙橀噺锛?```bash
 cp backend/.env.example backend/.env
-# 编辑 .env 文件，设置生产环境配置
-```
+# 缂栬緫 .env 鏂囦欢锛岃缃敓浜х幆澧冮厤缃?```
 
-2. 构建并启动容器：
+2. 鏋勫缓骞跺惎鍔ㄥ鍣細
 ```bash
 docker-compose up -d --build
 ```
 
-应用将在 http://localhost 运行。
+搴旂敤灏嗗湪 http://localhost 杩愯銆?
+## API鏂囨。
 
-## API文档
-
-启动后端服务后，可通过以下地址访问API文档：
-- Swagger UI: http://localhost:8000/swagger/
+鍚姩鍚庣鏈嶅姟鍚庯紝鍙€氳繃浠ヤ笅鍦板潃璁块棶API鏂囨。锛?- Swagger UI: http://localhost:8000/swagger/
 - ReDoc: http://localhost:8000/redoc/
 
-## 主要功能
+## 涓昏鍔熻兘
 
-### 样品编号规则
-样品编号自动生成，格式为：`材料缩写-YYYYMMDD-序号`
-- 材料缩写由用户输入
-- 序号为当天该样品类型下的最大序号加1
+### 鏍峰搧缂栧彿瑙勫垯
+鏍峰搧缂栧彿鑷姩鐢熸垚锛屾牸寮忎负锛歚鏉愭枡缂╁啓-YYYYMMDD-搴忓彿`
+- 鏉愭枡缂╁啓鐢辩敤鎴疯緭鍏?- 搴忓彿涓哄綋澶╄鏍峰搧绫诲瀷涓嬬殑鏈€澶у簭鍙峰姞1
 
-### 制备条件
-采用JSONField存储，每个样品可以有完全不同的制备条件字段，支持：
-- 动态添加/删除字段
-- 从其他样品复制制备条件
-
-### 测试类型
-完全动态，不预设任何测试类型：
-- 用户上传测试数据时创建
-- 按使用频率排序
-
-## 许可证
-
+### 鍒跺鏉′欢
+閲囩敤JSONField瀛樺偍锛屾瘡涓牱鍝佸彲浠ユ湁瀹屽叏涓嶅悓鐨勫埗澶囨潯浠跺瓧娈碉紝鏀寔锛?- 鍔ㄦ€佹坊鍔?鍒犻櫎瀛楁
+- 浠庡叾浠栨牱鍝佸鍒跺埗澶囨潯浠?
+### 娴嬭瘯绫诲瀷
+瀹屽叏鍔ㄦ€侊紝涓嶉璁句换浣曟祴璇曠被鍨嬶細
+- 鐢ㄦ埛涓婁紶娴嬭瘯鏁版嵁鏃跺垱寤?- 鎸変娇鐢ㄩ鐜囨帓搴?
+## 璁稿彲璇?
 MIT License
+
+
