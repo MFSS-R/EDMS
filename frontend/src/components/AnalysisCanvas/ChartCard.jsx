@@ -10,7 +10,7 @@ import {
 } from '@ant-design/icons'
 import { useQuery } from '@tanstack/react-query'
 import { analysisApi } from '../../services/analysis'
-import DataChart from '../datachart'
+import DataChart from '../DataChart'
 import useAnalysisCanvasStore from '../../store/analysisCanvas'
 
 const chartTypeLabelMap = {
