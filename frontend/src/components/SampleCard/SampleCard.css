@@ -1,0 +1,124 @@
+.sample-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+  overflow: hidden;
+}
+
+.sample-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.sample-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.sample-title-group {
+  min-width: 0;
+}
+
+.sample-header h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.35;
+}
+
+.sample-subtitle {
+  margin-top: 6px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.sample-detail-button {
+  flex-shrink: 0;
+  border-radius: 999px;
+}
+
+.sample-meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.sample-meta-tag {
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-container) 92%);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.chart-container {
+  flex: 1;
+  min-height: 320px;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 10%, var(--color-border) 90%);
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-primary) 4%, #ffffff 96%) 0%,
+    var(--color-bg-container) 100%
+  );
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.chart-content {
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .sample-card {
+    margin-bottom: 16px;
+  }
+
+  .sample-header {
+    flex-direction: column;
+  }
+
+  .sample-detail-button {
+    width: 100%;
+  }
+
+  .chart-container {
+    min-height: 280px;
+    padding: 14px;
+  }
+
+  .chart-content {
+    height: 240px;
+  }
+}

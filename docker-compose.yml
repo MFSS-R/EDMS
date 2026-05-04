@@ -1,0 +1,63 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: edms-db
+    restart: always
+    env_file:
+      - ./backend/.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - edms-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile.backend
+    container_name: edms-backend
+    restart: always
+    env_file:
+      - ./backend/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8000"
+    volumes:
+      - media_data:/app/media
+      - static_data:/app/staticfiles
+    networks:
+      - edms-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: edms-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "8081:80"
+    volumes:
+      - media_data:/var/www/media:ro
+      - static_data:/var/www/static:ro
+    networks:
+      - edms-network
+
+volumes:
+  postgres_data:
+  media_data:
+  static_data:
+
+networks:
+  edms-network:
+    driver: bridge

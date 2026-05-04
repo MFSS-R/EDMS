@@ -1,0 +1,178 @@
+.analysis-page {
+  padding: 24px;
+  min-height: 100vh;
+  background: var(--color-bg-base);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.test-data-detail {
+  padding: 24px;
+  min-height: 100vh;
+  background: var(--color-bg-base);
+}
+
+.test-data-detail .ant-table .ant-btn-link.ant-btn-dangerous,
+.test-data-detail .ant-table .ant-btn-color-dangerous.ant-btn-variant-link {
+  color: var(--color-danger) !important;
+  background: transparent !important;
+}
+
+.test-data-detail .ant-table .ant-btn-link.ant-btn-dangerous .anticon,
+.test-data-detail .ant-table .ant-btn-color-dangerous.ant-btn-variant-link .anticon {
+  color: var(--color-danger) !important;
+}
+
+.test-data-detail .ant-table .ant-btn-link.ant-btn-dangerous:hover,
+.test-data-detail .ant-table .ant-btn-link.ant-btn-dangerous:focus,
+.test-data-detail .ant-table .ant-btn-color-dangerous.ant-btn-variant-link:hover,
+.test-data-detail .ant-table .ant-btn-color-dangerous.ant-btn-variant-link:focus {
+  color: #ffffff !important;
+  background: var(--color-danger) !important;
+}
+
+.test-data-detail .ant-table .ant-btn-link.ant-btn-dangerous:hover .anticon,
+.test-data-detail .ant-table .ant-btn-link.ant-btn-dangerous:focus .anticon,
+.test-data-detail .ant-table .ant-btn-color-dangerous.ant-btn-variant-link:hover .anticon,
+.test-data-detail .ant-table .ant-btn-color-dangerous.ant-btn-variant-link:focus .anticon {
+  color: #ffffff !important;
+}
+
+.test-data-detail .ant-table .ant-btn-link.ant-btn-dangerous:active,
+.test-data-detail .ant-table .ant-btn-color-dangerous.ant-btn-variant-link:active {
+  color: #ffffff !important;
+  background: var(--color-danger-dark) !important;
+}
+
+.test-data-detail .ant-table .ant-btn-link.ant-btn-dangerous:active .anticon,
+.test-data-detail .ant-table .ant-btn-color-dangerous.ant-btn-variant-link:active .anticon {
+  color: #ffffff !important;
+}
+
+/* Card extra 区域响应式 */
+.ant-card-extra {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.ant-card-extra .ant-select {
+  flex: 1;
+  min-width: 150px;
+}
+
+.ant-card-extra .ant-btn {
+  flex-shrink: 0;
+}
+
+/* 表格响应式 */
+.ant-table {
+  overflow-x: auto;
+}
+
+.ant-table-container {
+  overflow-x: auto;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+  .analysis-page,
+  .test-data-detail {
+    padding: 16px;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .page-header > div {
+    width: 100%;
+  }
+  
+  .ant-card-extra {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+    margin-top: 8px;
+    padding: 0 !important;
+  }
+  
+  .ant-card-extra .ant-select {
+    width: 100% !important;
+  }
+  
+  .ant-card-extra .ant-btn {
+    width: 100%;
+  }
+  
+  .ant-descriptions {
+    flex-direction: column;
+  }
+  
+  .ant-descriptions-item {
+    width: 100% !important;
+  }
+  
+  .ant-space {
+    flex-wrap: wrap;
+  }
+  
+  .ant-table {
+    font-size: 12px;
+  }
+  
+  .ant-table th,
+  .ant-table td {
+    padding: 8px;
+  }
+  
+  .ant-card-head-title {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ant-card-extra {
+    flex-direction: column;
+  }
+  
+  .ant-card-extra .ant-select {
+    width: 100% !important;
+  }
+  
+  .ant-card-extra .ant-btn {
+    width: 100%;
+  }
+  
+  .page-header h2 {
+    font-size: 18px;
+  }
+  
+  .ant-table {
+    font-size: 11px;
+  }
+  
+  .ant-table th,
+  .ant-table td {
+    padding: 6px;
+  }
+}

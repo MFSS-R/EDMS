@@ -1,0 +1,134 @@
+.experiment-detail-page {
+  padding: 24px;
+  min-height: 100vh;
+  background: var(--color-bg-base);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-left h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.experiment-info-card {
+  margin-bottom: 24px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.test-type-selector {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--color-bg-container);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.test-type-selector h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.samples-section {
+  margin-top: 24px;
+}
+
+.samples-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.samples-section h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.samples-section p {
+  margin: 8px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.samples-summary {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-container) 90%);
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.samples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.sample-grid-item {
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .experiment-detail-page {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-right {
+    width: 100%;
+  }
+
+  .test-type-selector {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .test-type-selector select {
+    width: 100% !important;
+  }
+
+  .samples-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .samples-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}

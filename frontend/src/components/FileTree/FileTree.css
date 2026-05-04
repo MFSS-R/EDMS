@@ -1,0 +1,177 @@
+.file-tree {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.file-tree-header {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.file-tree-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.file-tree-search {
+  padding: 8px 0;
+}
+
+.file-tree-search .ant-input-affix-wrapper {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-container);
+  transition: all var(--transition-fast);
+}
+
+.file-tree-search .ant-input-affix-wrapper:hover,
+.file-tree-search .ant-input-affix-wrapper:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.file-tree-content {
+  flex: 1;
+  overflow: auto;
+}
+
+.file-tree-loading {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+
+.ant-tree {
+  background: transparent !important;
+  color: var(--color-text);
+}
+
+.ant-tree .ant-tree-node-content-wrapper {
+  padding: 4px 8px !important;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  width: calc(100% - 24px);
+}
+
+.ant-tree .ant-tree-node-content-wrapper:hover {
+  background-color: var(--color-primary-light) !important;
+  color: var(--color-primary);
+}
+
+.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected,
+.ant-tree .ant-tree-treenode-selected > .ant-tree-node-content-wrapper {
+  background: var(--color-primary) !important;
+  color: #fff !important;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+
+.ant-tree .ant-tree-node-content-wrapper .ant-tree-iconEle {
+  color: var(--color-text-tertiary);
+  transition: color var(--transition-fast);
+}
+
+.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected .ant-tree-iconEle,
+.ant-tree .ant-tree-treenode-selected > .ant-tree-node-content-wrapper .ant-tree-iconEle {
+  color: #fff !important;
+}
+
+.ant-tree .ant-tree-treenode {
+  padding: 2px 0 !important;
+  align-items: center;
+}
+
+.ant-tree .ant-tree-indent-unit {
+  width: 16px;
+}
+
+.ant-tree-switcher {
+  color: var(--color-text-tertiary);
+  transition: transform var(--transition-fast);
+}
+
+.ant-tree-switcher:hover {
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .ant-tree {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .ant-tree .ant-tree-node-content-wrapper:hover {
+  background-color: var(--color-primary-light) !important;
+}
+
+[data-theme="dark"] .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected,
+[data-theme="dark"] .ant-tree .ant-tree-treenode-selected > .ant-tree-node-content-wrapper {
+  background: linear-gradient(135deg, rgb(129 140 248 / 0.92), rgb(99 102 241 / 0.96)) !important;
+  color: #f8fafc !important;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.14),
+    0 6px 14px rgb(15 23 42 / 0.28);
+}
+
+[data-theme="dark"] .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected:hover,
+[data-theme="dark"] .ant-tree .ant-tree-treenode-selected > .ant-tree-node-content-wrapper:hover {
+  background: linear-gradient(135deg, rgb(165 180 252 / 0.96), rgb(129 140 248 / 0.98)) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected .ant-tree-iconEle,
+[data-theme="dark"] .ant-tree .ant-tree-treenode-selected > .ant-tree-node-content-wrapper .ant-tree-iconEle {
+  color: #ffffff !important;
+}
+
+/* Empty state */
+.file-tree-empty {
+  padding: 40px 20px;
+  text-align: center;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-container);
+  margin: 12px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-border);
+}
+
+/* Context menu */
+.context-menu {
+  background: var(--color-bg-container);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 10000;
+}
+
+.context-menu .ant-menu {
+  background: var(--color-bg-container);
+  border: none;
+  box-shadow: none;
+}
+
+.context-menu .ant-menu-item {
+  padding: 6px 12px;
+  margin: 0;
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  transition: all var(--transition-fast);
+}
+
+.context-menu .ant-menu-item:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.context-menu .ant-menu-item-selected {
+  background: var(--color-primary);
+  color: #fff;
+}

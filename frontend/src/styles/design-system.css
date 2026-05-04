@@ -1,0 +1,838 @@
+/* ==========================================================================
+   EDMS Design System - Professional Laboratory Data Management
+   Based on ui-ux-pro-max Design Intelligence
+   ========================================================================== */
+
+:root {
+  /* Primary Brand Colors - Professional Indigo */
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-primary-active: #3730a3;
+  --color-primary-light: #eef2ff;
+  --color-primary-dark: #312e81;
+
+  /* Semantic Colors */
+  --color-success: #059669;
+  --color-success-light: #d1fae5;
+  --color-success-dark: #047857;
+  --color-warning: #d97706;
+  --color-warning-light: #fef3c7;
+  --color-warning-dark: #b45309;
+  --color-danger: #dc2626;
+  --color-danger-light: #fee2e2;
+  --color-danger-dark: #b91c1c;
+  --color-info: #2563eb;
+  --color-info-light: #dbeafe;
+
+  /* Background Colors - Light Mode */
+  --color-bg-base: #ffffff;
+  --color-bg-container: #ffffff;
+  --color-bg-elevated: #ffffff;
+  --color-bg-layout: #f8fafc;
+  --color-bg-sidebar: #ffffff;
+  --color-bg-header: #ffffff;
+  --color-bg-hover: #f1f5f9;
+  --color-bg-active: #e2e8f0;
+
+  /* Border Colors */
+  --color-border: #e2e8f0;
+  --color-border-light: #f1f5f9;
+  --color-border-focus: #4f46e5;
+
+  /* Text Colors - Light Mode (WCAG 4.5:1 contrast) */
+  --color-text: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #64748b;
+  --color-text-disabled: #94a3b8;
+  --color-text-inverse: #ffffff;
+
+  /* Elevation Shadows - Professional SaaS Style */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.08);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+
+  /* Border Radius - Consistent Scale */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Spacing Scale - 4pt Grid */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Typography Scale */
+  --font-xs: 12px;
+  --font-sm: 14px;
+  --font-base: 16px;
+  --font-lg: 18px;
+  --font-xl: 20px;
+  --font-2xl: 24px;
+  --font-3xl: 30px;
+
+  /* Animation Timing - Professional UX Standards */
+  --transition-instant: 0ms;
+  --transition-fast: 100ms;
+  --transition-base: 150ms;
+  --transition-slow: 200ms;
+  --transition-slower: 300ms;
+  --transition-slowest: 400ms;
+
+  /* Z-Index Scale */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+}
+
+/* ==========================================================================
+   Dark Mode Theme - WCAG Compliant
+   ========================================================================== */
+
+[data-theme="dark"] {
+  /* Primary Colors - Lighter for dark mode */
+  --color-primary: #818cf8;
+  --color-primary-hover: #a5b4fc;
+  --color-primary-active: #6366f1;
+  --color-primary-light: #1e1b4b;
+  --color-primary-dark: #c7d2fe;
+
+  /* Background Colors - Dark Mode */
+  --color-bg-base: #0f172a;
+  --color-bg-container: #1e293b;
+  --color-bg-elevated: #334155;
+  --color-bg-layout: #0f172a;
+  --color-bg-sidebar: #1e293b;
+  --color-bg-header: #1e293b;
+  --color-bg-hover: #334155;
+  --color-bg-active: #475569;
+
+  /* Border Colors */
+  --color-border: #334155;
+  --color-border-light: #1e293b;
+  --color-border-focus: #818cf8;
+
+  /* Text Colors - Dark Mode (WCAG 4.5:1 contrast on dark) */
+  --color-text: #f1f5f9;
+  --color-text-secondary: #cbd5e1;
+  --color-text-tertiary: #94a3b8;
+  --color-text-disabled: #64748b;
+  --color-text-inverse: #0f172a;
+
+  /* Shadows - More pronounced in dark mode */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.7);
+}
+
+/* ==========================================================================
+   Base Styles - Professional Foundation
+   ========================================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--font-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-bg-layout);
+  color: var(--color-text);
+  transition: background-color var(--transition-slow), color var(--transition-slow);
+}
+
+/* ==========================================================================
+   Scrollbar Styling - Professional & Consistent
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-text-tertiary);
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+/* ==========================================================================
+   Typography - Professional Hierarchy
+   ========================================================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-text);
+}
+
+h1 { font-size: var(--font-3xl); }
+h2 { font-size: var(--font-2xl); }
+h3 { font-size: var(--font-xl); }
+h4 { font-size: var(--font-lg); }
+
+/* ==========================================================================
+   Ant Design Component Overrides - Professional Theme
+   ========================================================================== */
+
+/* Card Component */
+.ant-card {
+  background: var(--color-bg-container) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: box-shadow var(--transition-base), transform var(--transition-base), border-color var(--transition-base) !important;
+}
+
+.ant-card:hover {
+  box-shadow: var(--shadow-md) !important;
+}
+
+.ant-card-head {
+  background: var(--color-bg-elevated) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+  color: var(--color-text) !important;
+  padding: var(--space-4) var(--space-6) !important;
+}
+
+.ant-card-head-title {
+  color: var(--color-text) !important;
+  font-weight: 600 !important;
+}
+
+.ant-card-body {
+  background: var(--color-bg-container) !important;
+  color: var(--color-text) !important;
+  padding: var(--space-6) !important;
+}
+
+/* Collapse Component */
+.ant-collapse {
+  background: var(--color-bg-container) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.ant-collapse-header {
+  background: var(--color-bg-elevated) !important;
+  color: var(--color-text) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.ant-collapse-content {
+  background: var(--color-bg-container) !important;
+  color: var(--color-text) !important;
+  border-top: 1px solid var(--color-border) !important;
+}
+
+.ant-collapse-content-box {
+  background: var(--color-bg-container) !important;
+  color: var(--color-text) !important;
+}
+
+.ant-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-arrow {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Table Component - Professional Data Display */
+.ant-table {
+  background: var(--color-bg-container) !important;
+  color: var(--color-text) !important;
+  border-radius: var(--radius-lg) !important;
+  overflow: hidden;
+}
+
+.ant-table-thead > tr > th {
+  background: var(--color-bg-elevated) !important;
+  color: var(--color-text-secondary) !important;
+  font-weight: 600 !important;
+  font-size: var(--font-xs) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  padding: var(--space-4) var(--space-4) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  transition: background var(--transition-fast) !important;
+}
+
+.ant-table-thead > tr > th::before {
+  display: none !important;
+}
+
+.ant-table-tbody > tr > td {
+  background: var(--color-bg-container) !important;
+  color: var(--color-text) !important;
+  border-bottom: 1px solid var(--color-border-light) !important;
+  padding: var(--space-3) var(--space-4) !important;
+  transition: background var(--transition-fast) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: var(--color-bg-hover) !important;
+}
+
+.ant-table-tbody > tr.ant-table-row-selected > td {
+  background: var(--color-primary-light) !important;
+}
+
+.ant-table-row:hover {
+  cursor: pointer;
+}
+
+/* Button Components - Professional Interaction States */
+.ant-btn {
+  border-radius: var(--radius-md) !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-base) !important;
+  height: 36px !important;
+  padding: 0 var(--space-4) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--space-2) !important;
+}
+
+.ant-btn:active {
+  transform: scale(0.98);
+}
+
+.ant-btn-primary {
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+}
+
+.ant-btn-primary .anticon {
+  color: #ffffff !important;
+}
+
+.ant-btn-primary:hover {
+  background: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+}
+
+.ant-btn-primary:hover .anticon {
+  color: #ffffff !important;
+}
+
+.ant-btn-primary:active {
+  background: var(--color-primary-active) !important;
+  border-color: var(--color-primary-active) !important;
+  transform: translateY(0);
+}
+
+.ant-btn-default {
+  background: var(--color-bg-container) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text) !important;
+}
+
+.ant-btn-default:hover {
+  background: var(--color-bg-hover) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+.ant-btn-dangerous {
+  background: var(--color-danger) !important;
+  border-color: var(--color-danger) !important;
+  color: #ffffff !important;
+}
+
+.ant-btn-dangerous .anticon {
+  color: #ffffff !important;
+}
+
+/* Outline type dangerous buttons (e.g., header delete button with icon+text) */
+.ant-btn-dangerous.ant-btn-default {
+  background: transparent !important;
+  border-color: var(--color-danger) !important;
+  color: var(--color-danger) !important;
+}
+
+.ant-btn-dangerous.ant-btn-default .anticon {
+  color: var(--color-danger) !important;
+}
+
+.ant-btn-dangerous.ant-btn-default:hover {
+  background: var(--color-danger) !important;
+  border-color: var(--color-danger) !important;
+  color: #ffffff !important;
+}
+
+.ant-btn-dangerous.ant-btn-default:hover .anticon {
+  color: #ffffff !important;
+}
+
+.ant-btn-dangerous.ant-btn-default:active {
+  background: var(--color-danger-dark) !important;
+  border-color: var(--color-danger-dark) !important;
+  color: #ffffff !important;
+}
+
+.ant-btn-dangerous.ant-btn-default:active .anticon {
+  color: #ffffff !important;
+}
+
+.ant-btn-dangerous.ant-btn-default:active {
+  background: var(--color-danger-dark) !important;
+  border-color: var(--color-danger-dark) !important;
+  color: #ffffff !important;
+}
+
+.ant-btn-dangerous.ant-btn-default:active .anticon {
+  color: #ffffff !important;
+}
+
+.ant-btn-dangerous:hover {
+  background: var(--color-danger-dark) !important;
+  border-color: var(--color-danger-dark) !important;
+  color: #ffffff !important;
+}
+
+.ant-btn-dangerous:hover .anticon {
+  color: #ffffff !important;
+}
+
+/* Link type dangerous buttons (e.g., delete link buttons) */
+.ant-btn-dangerous.ant-btn-link {
+  color: var(--color-danger) !important;
+}
+
+.ant-btn-dangerous.ant-btn-link:hover,
+.ant-btn-dangerous.ant-btn-link:focus {
+  background: var(--color-danger) !important;
+  color: #ffffff !important;
+}
+
+.ant-btn-dangerous.ant-btn-link:hover .anticon,
+.ant-btn-dangerous.ant-btn-link:focus .anticon {
+  color: #ffffff !important;
+}
+
+.ant-btn-dangerous.ant-btn-link:active {
+  background: var(--color-danger-dark) !important;
+  color: #ffffff !important;
+}
+
+.ant-btn-dangerous.ant-btn-link:active .anticon {
+  color: #ffffff !important;
+}
+
+/* Ensure all colored buttons have white text and icons */
+.ant-btn-primary,
+.ant-btn-dangerous,
+.ant-btn-danger {
+  color: #ffffff !important;
+}
+
+.ant-btn-primary .anticon,
+.ant-btn-dangerous .anticon,
+.ant-btn-danger .anticon {
+  color: #ffffff !important;
+}
+
+/* Input Components */
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select-selector {
+  background: var(--color-bg-base) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--color-text) !important;
+  transition: all var(--transition-fast) !important;
+  min-height: 36px !important;
+}
+
+.ant-input:hover,
+.ant-input-affix-wrapper:hover,
+.ant-select-selector:hover {
+  border-color: var(--color-primary) !important;
+}
+
+.ant-input:focus,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused,
+.ant-select-focused .ant-select-selector {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px var(--color-primary-light) !important;
+}
+
+.ant-input::placeholder,
+.ant-input-affix-wrapper::placeholder {
+  color: var(--color-text-tertiary) !important;
+}
+
+.ant-select-selection-placeholder,
+.ant-select-selection-item {
+  color: var(--color-text) !important;
+  line-height: 34px !important;
+}
+
+/* Tag Components */
+.ant-tag {
+  border-radius: var(--radius-sm) !important;
+  padding: 2px 8px !important;
+  font-weight: 500 !important;
+  font-size: var(--font-xs) !important;
+  border: 1px solid transparent !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.ant-tag:hover {
+  transform: translateY(-1px);
+}
+
+/* Modal Components */
+.ant-modal-content {
+  background: var(--color-bg-container) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-2xl) !important;
+  border: 1px solid var(--color-border) !important;
+  overflow: hidden;
+}
+
+.ant-modal-header {
+  background: var(--color-bg-elevated) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  padding: var(--space-6) !important;
+}
+
+.ant-modal-title {
+  color: var(--color-text) !important;
+  font-weight: 600 !important;
+  font-size: var(--font-lg) !important;
+}
+
+.ant-modal-body {
+  background: var(--color-bg-container) !important;
+  color: var(--color-text) !important;
+  padding: var(--space-6) !important;
+}
+
+.ant-modal-footer {
+  background: var(--color-bg-elevated) !important;
+  border-top: 1px solid var(--color-border) !important;
+  padding: var(--space-4) var(--space-6) !important;
+}
+
+/* Tabs Components */
+.ant-tabs {
+  color: var(--color-text) !important;
+}
+
+.ant-tabs-tab {
+  color: var(--color-text-secondary) !important;
+  font-weight: 500 !important;
+  padding: var(--space-3) 0 !important;
+  margin: 0 var(--space-4) 0 0 !important;
+  transition: color var(--transition-fast) !important;
+}
+
+.ant-tabs-tab:hover {
+  color: var(--color-text) !important;
+}
+
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--color-primary) !important;
+  font-weight: 600 !important;
+}
+
+.ant-tabs-ink-bar {
+  background: var(--color-primary) !important;
+  height: 2px !important;
+  border-radius: var(--radius-full) !important;
+}
+
+/* Descriptions */
+.ant-descriptions-item-label {
+  color: var(--color-text-secondary) !important;
+  font-weight: 500 !important;
+  font-size: var(--font-sm) !important;
+}
+
+.ant-descriptions-item-content {
+  color: var(--color-text) !important;
+  font-size: var(--font-sm) !important;
+}
+
+/* Pagination */
+.ant-pagination-item {
+  background: var(--color-bg-container) !important;
+  border-color: var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.ant-pagination-item a {
+  color: var(--color-text) !important;
+}
+
+.ant-pagination-item-active {
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.ant-pagination-item-active a {
+  color: var(--color-text-inverse) !important;
+}
+
+.ant-pagination-prev button,
+.ant-pagination-next button {
+  color: var(--color-text) !important;
+}
+
+/* Dropdown Menu */
+.ant-dropdown-menu {
+  background: var(--color-bg-container) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+  padding: var(--space-2) !important;
+}
+
+.ant-dropdown-menu-item {
+  color: var(--color-text) !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-2) var(--space-3) !important;
+  font-size: var(--font-sm) !important;
+}
+
+.ant-dropdown-menu-item:hover {
+  background: var(--color-bg-hover) !important;
+  color: var(--color-text) !important;
+}
+
+/* Form Labels */
+.ant-form-item-label > label {
+  color: var(--color-text-secondary) !important;
+  font-weight: 500 !important;
+  font-size: var(--font-sm) !important;
+}
+
+.ant-form-item-explain-error {
+  color: var(--color-danger) !important;
+  font-size: var(--font-xs) !important;
+  margin-top: var(--space-1) !important;
+}
+
+/* ==========================================================================
+   Layout Components - Professional Structure
+   ========================================================================== */
+
+.ant-layout {
+  background: var(--color-bg-layout) !important;
+}
+
+.ant-layout-header {
+  background: var(--color-bg-header) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  padding: 0 var(--space-6) !important;
+}
+
+.ant-layout-sider {
+  background: var(--color-bg-sidebar) !important;
+  border-right: 1px solid var(--color-border) !important;
+}
+
+.ant-layout-content {
+  background: var(--color-bg-layout) !important;
+}
+
+/* ==========================================================================
+   Professional Animations
+   ========================================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.page-container {
+  animation: slideUpFadeIn var(--transition-slower) ease-out;
+}
+
+/* Skeleton Loading Animation */
+[data-theme="dark"] .ant-skeleton-content .ant-skeleton-title,
+[data-theme="dark"] .ant-skeleton-content .ant-skeleton-paragraph > li {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-elevated) 25%,
+    var(--color-border) 50%,
+    var(--color-bg-elevated) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ==========================================================================
+   Utility Classes - Professional Design Tokens
+   ========================================================================== */
+
+.card-hover {
+  transition: transform var(--transition-base), box-shadow var(--transition-base) !important;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .glass-effect {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Focus Visible - Accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+/* ==========================================================================
+   Responsive Design - Mobile First
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --font-base: 15px;
+  }
+
+  .ant-card-body {
+    padding: var(--space-4) !important;
+  }
+
+  .ant-table-thead > tr > th {
+    padding: var(--space-3) var(--space-2) !important;
+    font-size: 11px !important;
+  }
+
+  .ant-table-tbody > tr > td {
+    padding: var(--space-2) var(--space-2) !important;
+  }
+}
+
+/* ==========================================================================
+   Reduced Motion - Accessibility
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .page-container {
+    animation: none !important;
+  }
+}
