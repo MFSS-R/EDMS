@@ -123,6 +123,32 @@ docker compose down
 - nginx 反向代理
 - 静态文件与上传文件持久化
 
+## 版本号管理
+
+项目根目录有一个 `VERSION` 文件，例如：
+
+```text
+1.0.1
+```
+
+建议每次准备发版时：
+
+1. 修改 `VERSION`
+2. 提交代码
+3. 打 Git tag
+
+示例：
+
+```bash
+git add VERSION
+git commit -m "Release v1.0.2"
+git tag v1.0.2
+git push
+git push origin v1.0.2
+```
+
+前端设置页会通过 `/api/system/version/` 自动显示当前版本号。
+
 如果后面你想继续增强，我建议下一步加：
 
 - 自动备份数据库
