@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Card, Tabs, Form, Input, Button, Avatar, Upload, message, Descriptions } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { useAuthStore } from '../store/auth'
+import { authApi } from '../services/auth'
 
 const { TabPane } = Tabs
 
@@ -11,6 +12,7 @@ export default function Settings() {
   const [passwordForm] = Form.useForm()
   const [profileLoading, setProfileLoading] = useState(false)
   const [passwordLoading, setPasswordLoading] = useState(false)
+  const [avatarLoading, setAvatarLoading] = useState(false)
 
   const handleProfileSubmit = async (values) => {
     setProfileLoading(true)
@@ -38,10 +40,21 @@ export default function Settings() {
   }
 
   const handleAvatarUpload = async (info) => {
-    if (info.file.status === 'done') {
-      message.success('头像上传成功')
-    } else if (info.file.status === 'error') {
-      message.error('头像上传失败')
+    const file = info.file.originFileObj || info.file
+    if (!file) return
+
+    setAvatarLoading(true)
+    try {
+      const formData = new FormData()
+      formData.append('avatar', file)
+      const response = await authApi.updateProfile(formData)
+      const updatedUser = response.data || response
+      updateProfile(updatedUser)
+      message.success('头像更新成功')
+    } catch (error) {
+      message.error(error.message || '头像上传失败')
+    } finally {
+      setAvatarLoading(false)
     }
   }
 
@@ -55,19 +68,22 @@ export default function Settings() {
         <Tabs defaultActiveKey="profile">
           <TabPane tab="个人信息" key="profile">
             <div style={{ maxWidth: 600 }}>
-              <div style={{ marginBottom: 24 }}>
+              <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center' }}>
                 <Avatar size={80} icon={<UserOutlined />} src={user?.avatar} />
                 <Upload
                   name="avatar"
                   showUploadList={false}
-                  action="/api/auth/profile/"
+                  beforeUpload={() => false}
                   onChange={handleAvatarUpload}
+                  disabled={avatarLoading}
                   style={{ marginLeft: 16 }}
                 >
-                  <Button style={{ marginLeft: 16 }}>更换头像</Button>
+                  <Button style={{ marginLeft: 16 }} loading={avatarLoading}>
+                    更换头像
+                  </Button>
                 </Upload>
               </div>
-              
+
               <Form
                 form={profileForm}
                 layout="vertical"

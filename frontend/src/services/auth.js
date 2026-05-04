@@ -5,7 +5,9 @@ export const authApi = {
   register: (data) => api.post('/auth/register/', data),
   logout: (data) => api.post('/auth/logout/', data),
   getProfile: () => api.get('/auth/profile/'),
-  updateProfile: (data) => api.put('/auth/profile/', data),
+  updateProfile: (data) => api.put('/auth/profile/', data, data instanceof FormData ? {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  } : undefined),
   changePassword: (data) => api.post('/auth/password/change/', data),
   refreshToken: (refresh) => api.post('/auth/token/refresh/', { refresh }),
 
