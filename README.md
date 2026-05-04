@@ -1,153 +1,165 @@
-﻿# 瀹為獙鏁版嵁绠＄悊绯荤粺 (EDMS)
+# 实验数据管理系统（EDMS）
 
-涓€濂椾笓涓烘潗鏂欏悎鎴愬疄楠岃璁＄殑鏁版嵁绠＄悊绯荤粺锛岄噰鐢?React + Django 鍓嶅悗绔垎绂绘灦鏋勩€?
-## 鍔熻兘鐗圭偣
+一套面向材料实验与测试数据管理的系统，采用 `React + Django` 前后端分离架构，支持样品管理、测试数据管理、数据分析与用户权限控制。
 
-- **椤圭洰绠＄悊**锛氬垱寤哄拰绠＄悊澶氫釜鐮旂┒椤圭洰
-- **鏍峰搧绠＄悊**锛氱伒娲荤殑鏍峰搧缂栧彿绯荤粺锛屾敮鎸佸姩鎬佸埗澶囨潯浠?- **娴嬭瘯鏁版嵁绠＄悊**锛氬姩鎬佹祴璇曠被鍨嬶紝鏀寔澶氭枃浠朵笂浼?- **鏁版嵁瀵煎嚭**锛氭敮鎸佸鍑烘牱鍝佸垪琛ㄥ拰娴嬭瘯鏁版嵁涓篍xcel鏍煎紡
-- **鏉冮檺鎺у埗**锛氱敤鎴峰彧鑳借闂嚜宸卞垱寤虹殑鏁版嵁
-- **鏂囦欢鏍戝鑸?*锛氱洿瑙傜殑鏍戝舰缁撴瀯娴忚鏁版嵁
+## 功能特点
 
-## 鎶€鏈爤
+- 项目管理：创建和管理多个研究项目
+- 样品管理：支持样品信息维护、真实姓名/备注等字段管理
+- 测试数据管理：支持测试类型、测试文件上传和详情查看
+- 数据分析：支持图表展示、分析画布和算法管理
+- 用户中心：支持个人信息维护、头像上传、密码修改
+- 权限控制：用户仅可访问自己的业务数据
 
-### 鍚庣
+## 技术栈
+
+### 后端
+
 - Django 4.2 LTS
 - Django REST Framework
-- JWT璁よ瘉
+- JWT 认证
 - SQLite / PostgreSQL
 
-### 鍓嶇
+### 前端
+
 - React 18
 - Ant Design 5
 - React Router 6
-- Zustand (鐘舵€佺鐞?
-- React Query (鏁版嵁鑾峰彇)
+- Zustand
+- React Query
 - Axios
 
-## 椤圭洰缁撴瀯
+## 项目结构
 
+```text
+EDMS_ReactDjango/
+├─ backend/                  # Django 后端
+│  ├─ apps/                  # 业务模块
+│  │  ├─ analysis/           # 数据分析
+│  │  ├─ projects/           # 项目管理
+│  │  ├─ samples/            # 样品管理
+│  │  ├─ tests/              # 测试数据管理
+│  │  └─ users/              # 用户与认证
+│  ├─ edms/                  # Django 项目配置
+│  ├─ manage.py
+│  └─ requirements.txt
+├─ frontend/                 # React 前端
+│  ├─ src/
+│  │  ├─ components/         # 通用组件
+│  │  ├─ pages/              # 页面
+│  │  ├─ services/           # 接口服务
+│  │  ├─ store/              # 状态管理
+│  │  └─ utils/              # 工具方法
+│  ├─ package.json
+│  └─ vite.config.js
+├─ Dockerfile.backend
+├─ Dockerfile.frontend
+├─ docker-compose.yml
+├─ start_services.bat
+├─ stop_services.bat
+└─ README.md
 ```
-edms/
-鈹溾攢鈹€ backend/                # Django鍚庣
-鈹?  鈹溾攢鈹€ manage.py
-鈹?  鈹溾攢鈹€ requirements.txt
-鈹?  鈹溾攢鈹€ .env.example
-鈹?  鈹溾攢鈹€ edms/               # 椤圭洰閰嶇疆
-鈹?  鈹溾攢鈹€ apps/               # 搴旂敤妯″潡
-鈹?  鈹?  鈹溾攢鈹€ users/          # 鐢ㄦ埛绠＄悊
-鈹?  鈹?  鈹溾攢鈹€ projects/       # 椤圭洰绠＄悊
-鈹?  鈹?  鈹溾攢鈹€ samples/        # 鏍峰搧绠＄悊
-鈹?  鈹?  鈹斺攢鈹€ tests/          # 娴嬭瘯鏁版嵁绠＄悊
-鈹?  鈹斺攢鈹€ media/              # 涓婁紶鏂囦欢
-鈹溾攢鈹€ frontend/               # React鍓嶇
-鈹?  鈹溾攢鈹€ package.json
-鈹?  鈹溾攢鈹€ .env.example
-鈹?  鈹斺攢鈹€ src/
-鈹?      鈹溾攢鈹€ components/     # 鍏叡缁勪欢
-鈹?      鈹溾攢鈹€ pages/          # 椤甸潰缁勪欢
-鈹?      鈹溾攢鈹€ services/       # API鏈嶅姟
-鈹?      鈹溾攢鈹€ store/          # 鐘舵€佺鐞?鈹?      鈹斺攢鈹€ utils/          # 宸ュ叿鍑芥暟
-鈹溾攢鈹€ docker-compose.yml
-鈹溾攢鈹€ Dockerfile.backend
-鈹溾攢鈹€ Dockerfile.frontend
-鈹斺攢鈹€ README.md
-```
 
-## Local Launcher
+## Windows 一键本地启动
 
-For Windows local development, you can use the root scripts:
+项目根目录提供了本地启动脚本：
 
 ```bat
 start_services.bat
 ```
 
-The launcher will:
-- verify `backend/`, `frontend/`, `venv/`, and `npm`
-- auto-create missing `.env` files from `.env.example`
-- run `python manage.py check`
-- run `python manage.py migrate`
-- verify ports `3000` and `8000` are free
-- start backend on `http://127.0.0.1:3000`
-- start frontend on `http://127.0.0.1:8000`
-- write logs to `logs\backend.log` and `logs\frontend.log`
-- open the frontend automatically in your browser
+该脚本会自动完成以下操作：
 
-To stop local services quickly, use:
+- 检查 `backend/`、`frontend/`、`venv/` 是否存在
+- 检查 `npm` 是否可用
+- 自动补齐缺失的 `.env` 文件
+- 执行 `python manage.py check`
+- 执行 `python manage.py migrate`
+- 启动 Django 后端
+- 启动 Vite 前端
+- 自动打开浏览器
+
+停止本地服务可使用：
 
 ```bat
 stop_services.bat
 ```
 
-## 鏈湴寮€鍙?
-### 鍚庣璁剧疆
+## 本地开发
 
-1. 鍒涘缓铏氭嫙鐜骞跺畨瑁呬緷璧栵細
+### 1. 后端启动
+
 ```bash
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# 鎴?venv\Scripts\activate  # Windows
-
+venv\Scripts\activate
 pip install -r backend/requirements.txt
-```
-
-2. 閰嶇疆鐜鍙橀噺锛?```bash
-cp backend/.env.example backend/.env
-# 缂栬緫 .env 鏂囦欢锛岃缃?SECRET_KEY 绛夐厤缃?```
-
-3. 杩愯鏁版嵁搴撹縼绉伙細
-```bash
 cd backend
 python manage.py migrate
-python manage.py createsuperuser  # 鍒涘缓绠＄悊鍛樿处鎴?python manage.py runserver
+python manage.py runserver 127.0.0.1:3000
 ```
 
-鍚庣鏈嶅姟灏嗗湪 http://localhost:8000 杩愯锛孉PI鏂囨。鍙€氳繃 http://localhost:8000/swagger/ 璁块棶銆?
-### 鍓嶇璁剧疆
+后端默认地址：
 
-1. 瀹夎渚濊禆锛?```bash
+- API：`http://127.0.0.1:3000/api/`
+- Swagger：`http://127.0.0.1:3000/swagger/`
+
+### 2. 前端启动
+
+```bash
 cd frontend
 npm install
-```
-
-2. 閰嶇疆鐜鍙橀噺锛?```bash
-cp .env.example .env
-# 鏍规嵁闇€瑕佷慨鏀归厤缃?```
-
-3. 鍚姩寮€鍙戞湇鍔″櫒锛?```bash
 npm run dev
 ```
 
-鍓嶇鏈嶅姟灏嗗湪 http://localhost:3000 杩愯銆?
-## Docker閮ㄧ讲
+前端默认地址：
 
-1. 閰嶇疆鐜鍙橀噺锛?```bash
-cp backend/.env.example backend/.env
-# 缂栬緫 .env 鏂囦欢锛岃缃敓浜х幆澧冮厤缃?```
+- 前端页面：`http://127.0.0.1:8000`
 
-2. 鏋勫缓骞跺惎鍔ㄥ鍣細
+## 环境变量
+
+后端 `.env` 常见配置示例：
+
+```env
+DEBUG=True
+SECRET_KEY=please-change-me
+ALLOWED_HOSTS=127.0.0.1,localhost
+
+DATABASE_URL=sqlite:///db.sqlite3
+
+CORS_ALLOWED_ORIGINS=http://127.0.0.1:8000,http://localhost:8000
+CSRF_TRUSTED_ORIGINS=http://127.0.0.1:8000,http://localhost:8000
+CORS_ALLOW_ALL_ORIGINS=False
+SECURE_SSL_REDIRECT=False
+```
+
+## Docker 部署
+
+### 本地或服务器构建
+
 ```bash
 docker-compose up -d --build
 ```
 
-搴旂敤灏嗗湪 http://localhost 杩愯銆?
-## API鏂囨。
+如果用于服务器部署，建议：
 
-鍚姩鍚庣鏈嶅姟鍚庯紝鍙€氳繃浠ヤ笅鍦板潃璁块棶API鏂囨。锛?- Swagger UI: http://localhost:8000/swagger/
-- ReDoc: http://localhost:8000/redoc/
+- 将 `DEBUG` 设为 `False`
+- 正确配置 `ALLOWED_HOSTS`
+- 正确配置 `CORS_ALLOWED_ORIGINS` 与 `CSRF_TRUSTED_ORIGINS`
+- 使用 PostgreSQL
+- 配置静态文件与媒体文件持久化目录
 
-## 涓昏鍔熻兘
+## API 文档
 
-### 鏍峰搧缂栧彿瑙勫垯
-鏍峰搧缂栧彿鑷姩鐢熸垚锛屾牸寮忎负锛歚鏉愭枡缂╁啓-YYYYMMDD-搴忓彿`
-- 鏉愭枡缂╁啓鐢辩敤鎴疯緭鍏?- 搴忓彿涓哄綋澶╄鏍峰搧绫诲瀷涓嬬殑鏈€澶у簭鍙峰姞1
+启动后端后，可通过以下地址查看：
 
-### 鍒跺鏉′欢
-閲囩敤JSONField瀛樺偍锛屾瘡涓牱鍝佸彲浠ユ湁瀹屽叏涓嶅悓鐨勫埗澶囨潯浠跺瓧娈碉紝鏀寔锛?- 鍔ㄦ€佹坊鍔?鍒犻櫎瀛楁
-- 浠庡叾浠栨牱鍝佸鍒跺埗澶囨潯浠?
-### 娴嬭瘯绫诲瀷
-瀹屽叏鍔ㄦ€侊紝涓嶉璁句换浣曟祴璇曠被鍨嬶細
-- 鐢ㄦ埛涓婁紶娴嬭瘯鏁版嵁鏃跺垱寤?- 鎸変娇鐢ㄩ鐜囨帓搴?
-## 璁稿彲璇?
-MIT License
+- Swagger UI：`/swagger/`
+- ReDoc：`/redoc/`
 
+## 说明
 
+- 本项目包含头像上传与媒体文件访问功能，本地开发时前端已兼容 `/media` 代理
+- 生产环境请确保后端媒体文件目录已正确挂载并可访问
+
+## License
+
+MIT
