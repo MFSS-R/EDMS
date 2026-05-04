@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './store/auth'
 import MainLayout from './components/Layout/MainLayout'
@@ -33,6 +34,16 @@ function AdminRoute({ children }) {
 }
 
 function App() {
+  const { isAuthenticated, fetchProfile } = useAuthStore()
+
+  useEffect(() => {
+    if (!isAuthenticated) return
+
+    fetchProfile().catch(() => {
+      // Invalid token handling is centralized in the auth store.
+    })
+  }, [fetchProfile, isAuthenticated])
+
   return (
     <BrowserRouter>
       <Routes>

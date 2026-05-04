@@ -1,17 +1,25 @@
 """
 用户认证视图
 """
-from rest_framework import status, generics, permissions
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from drf_spectacular.utils import extend_schema, OpenApiExample
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from django.contrib.auth import get_user_model
 
-from .serializers import UserSerializer, UserListSerializer, UserRegisterSerializer, UserUpdateSerializer, PasswordChangeSerializer, AdminUserCreateSerializer, AdminUserUpdateSerializer, AdminPasswordResetSerializer
-from apps.utils.responses import success_response, error_response
+from django.contrib.auth import get_user_model
+from drf_spectacular.utils import extend_schema
+from rest_framework import status
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+from apps.utils.responses import error_response, success_response
+from .serializers import (
+    AdminPasswordResetSerializer,
+    AdminUserCreateSerializer,
+    AdminUserUpdateSerializer,
+    PasswordChangeSerializer,
+    UserListSerializer,
+    UserRegisterSerializer,
+    UserSerializer,
+    UserUpdateSerializer,
+)
 
 User = get_user_model()
 
@@ -20,13 +28,13 @@ class LoginView(TokenObtainPairView):
     """
     用户登录
     """
-    pass
 
 
 class RegisterView(APIView):
     """
     用户注册
     """
+
     permission_classes = [AllowAny]
 
     @extend_schema(
@@ -41,7 +49,7 @@ class RegisterView(APIView):
             return success_response(
                 UserSerializer(user).data,
                 '注册成功',
-                status.HTTP_201_CREATED
+                status.HTTP_201_CREATED,
             )
         return error_response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
@@ -50,6 +58,7 @@ class LogoutView(APIView):
     """
     用户登出
     """
+
     permission_classes = [IsAuthenticated]
 
     @extend_schema(summary='用户登出')
@@ -61,6 +70,7 @@ class UserProfileView(APIView):
     """
     用户资料
     """
+
     permission_classes = [IsAuthenticated]
 
     @extend_schema(summary='获取用户资料', responses={200: UserSerializer})
@@ -70,10 +80,15 @@ class UserProfileView(APIView):
 
     @extend_schema(summary='更新用户资料', request=UserUpdateSerializer, responses={200: UserSerializer})
     def put(self, request):
-        serializer = UserUpdateSerializer(request.user, data=request.data, partial=True, context={'request': request})
+        serializer = UserUpdateSerializer(
+            request.user,
+            data=request.data,
+            partial=True,
+            context={'request': request},
+        )
         if serializer.is_valid():
             serializer.save()
-            return success_response(serializer.data, '用户信息更新成功')
+            return success_response(UserSerializer(request.user).data, '用户信息更新成功')
         return error_response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(summary='部分更新用户资料', request=UserUpdateSerializer, responses={200: UserSerializer})
@@ -85,6 +100,7 @@ class PasswordChangeView(APIView):
     """
     修改密码
     """
+
     permission_classes = [IsAuthenticated]
 
     @extend_schema(summary='修改密码', request=PasswordChangeSerializer, responses={200: '密码修改成功'})
@@ -100,6 +116,7 @@ class AdminUserListView(APIView):
     """
     管理员用户列表
     """
+
     permission_classes = [IsAuthenticated]
 
     @extend_schema(summary='获取用户列表', responses={200: UserListSerializer(many=True)})
@@ -121,6 +138,7 @@ class AdminUserDetailView(APIView):
     """
     管理员用户详情
     """
+
     permission_classes = [IsAuthenticated]
 
     def get_object(self, pk):
@@ -142,7 +160,12 @@ class AdminUserDetailView(APIView):
         user = self.get_object(pk)
         if not user:
             return error_response('用户不存在', status.HTTP_404_NOT_FOUND)
-        serializer = AdminUserUpdateSerializer(user, data=request.data, partial=True, context={'request': request})
+        serializer = AdminUserUpdateSerializer(
+            user,
+            data=request.data,
+            partial=True,
+            context={'request': request},
+        )
         if serializer.is_valid():
             serializer.save()
             return success_response(UserSerializer(user).data, '用户更新成功')
@@ -165,6 +188,7 @@ class AdminPasswordResetView(APIView):
     """
     管理员重置用户密码
     """
+
     permission_classes = [IsAuthenticated]
 
     @extend_schema(summary='重置用户密码', request=AdminPasswordResetSerializer, responses={200: '密码重置成功'})
@@ -173,7 +197,7 @@ class AdminPasswordResetView(APIView):
             user = User.objects.get(pk=pk)
         except User.DoesNotExist:
             return error_response('用户不存在', status.HTTP_404_NOT_FOUND)
-        
+
         serializer = AdminPasswordResetSerializer(data=request.data, context={'user': user})
         if serializer.is_valid():
             serializer.save()
@@ -185,6 +209,7 @@ class AdminUserToggleActiveView(APIView):
     """
     管理员切换用户激活状态
     """
+
     permission_classes = [IsAuthenticated]
 
     @extend_schema(summary='切换用户激活状态', responses={200: UserSerializer})
@@ -193,7 +218,7 @@ class AdminUserToggleActiveView(APIView):
             user = User.objects.get(pk=pk)
         except User.DoesNotExist:
             return error_response('用户不存在', status.HTTP_404_NOT_FOUND)
-        
+
         user.is_active = not user.is_active
         user.save()
         return success_response(UserSerializer(user).data, '用户状态已更新')

@@ -16,48 +16,52 @@ api.interceptors.request.use(
     }
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
 api.interceptors.response.use(
-  (response) => {
-    return response.data
-  },
+  (response) => response.data,
   (error) => {
     const errorData = error.response?.data
     let errorMessage = '网络错误，请稍后重试'
+
     if (errorData) {
       if (errorData.message) {
         errorMessage = typeof errorData.message === 'string'
           ? errorData.message
-          : Object.values(errorData.message).flat().join('，')
+          : Object.values(errorData.message).flat().join('；')
       } else if (typeof errorData === 'object') {
         const messages = []
-        Object.entries(errorData).forEach(([key, value]) => {
+        Object.entries(errorData).forEach(([, value]) => {
           if (Array.isArray(value)) {
-            messages.push(value.join('，'))
+            messages.push(value.join('；'))
           } else if (typeof value === 'string') {
             messages.push(value)
           }
         })
         if (messages.length > 0) {
-          errorMessage = messages.join('，')
+          errorMessage = messages.join('；')
         }
       } else if (errorData.error) {
         errorMessage = errorData.error
       }
     }
+
     if (error.response?.status === 401) {
-      const isLoginRequest = error.config?.url?.includes('/auth/login/') || error.config?.url?.includes('/auth/register/')
+      const isLoginRequest = error.config?.url?.includes('/auth/login/')
+        || error.config?.url?.includes('/auth/register/')
       if (!isLoginRequest) {
         localStorage.removeItem('access_token')
         localStorage.removeItem('refresh_token')
         window.location.href = '/login'
       }
     }
-    return Promise.reject({ message: errorMessage, data: errorData, status: error.response?.status })
+
+    return Promise.reject({
+      message: errorMessage,
+      data: errorData,
+      status: error.response?.status,
+    })
   }
 )
 

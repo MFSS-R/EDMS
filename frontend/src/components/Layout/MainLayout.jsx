@@ -17,6 +17,7 @@ import {
   TeamOutlined,
 } from '@ant-design/icons'
 import { useAuthStore } from '../../store/auth'
+import { resolveMediaUrl } from '../../utils/media'
 import FileTree from '../FileTree'
 import './MainLayout.css'
 
@@ -58,6 +59,13 @@ export default function MainLayout() {
   const location = useLocation()
   const { user, logout } = useAuthStore()
   const { token: { colorBgContainer } } = theme.useToken()
+  const avatarSrc = useMemo(() => {
+    if (!user?.avatar) return undefined
+    const resolvedAvatarUrl = resolveMediaUrl(user.avatar)
+    if (!resolvedAvatarUrl) return undefined
+    const joiner = resolvedAvatarUrl.includes('?') ? '&' : '?'
+    return `${resolvedAvatarUrl}${joiner}v=${user.updated_at || Date.now()}`
+  }, [user?.avatar, user?.updated_at])
   const userIdentity = useMemo(() => {
     if (!user) return ''
     if (user.real_name && user.username && user.real_name !== user.username) {
@@ -183,7 +191,7 @@ export default function MainLayout() {
             </div>
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
               <div className="user-info">
-                <Avatar icon={<UserOutlined />} src={user?.avatar} className="user-avatar" />
+                <Avatar icon={<UserOutlined />} src={avatarSrc} className="user-avatar" />
                 <span className="user-name">{userIdentity}</span>
               </div>
             </Dropdown>

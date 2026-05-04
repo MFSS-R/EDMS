@@ -17,11 +17,6 @@ set "FRONTEND_PORT=8000"
 set "BACKEND_URL=http://127.0.0.1:%BACKEND_PORT%"
 set "FRONTEND_URL=http://127.0.0.1:%FRONTEND_PORT%"
 
-echo ========================================
-echo           EDMS Local Launcher
-echo ========================================
-echo.
-
 call :check_path "%BACKEND_DIR%" "Backend directory"
 if errorlevel 1 goto :end
 call :check_path "%FRONTEND_DIR%" "Frontend directory"
@@ -34,17 +29,12 @@ break > "%FRONTEND_LOG%"
 if not exist "%VENV_PYTHON%" (
   echo [ERROR] Python virtual environment not found:
   echo         %VENV_PYTHON%
-  echo.
-  echo Please create it first:
-  echo   python -m venv venv
-  echo   venv\Scripts\pip install -r backend\requirements.txt
   goto :end
 )
 
 where npm >nul 2>nul
 if errorlevel 1 (
   echo [ERROR] npm was not found in PATH.
-  echo         Please install Node.js and make sure npm is available.
   goto :end
 )
 
@@ -74,18 +64,12 @@ if errorlevel 1 goto :end
 
 echo [1/4] Checking backend configuration...
 "%VENV_PYTHON%" "%BACKEND_DIR%\manage.py" check
-if errorlevel 1 (
-  echo [ERROR] Django configuration check failed.
-  goto :end
-)
+if errorlevel 1 goto :end
 
 echo.
 echo [2/4] Applying database migrations...
 "%VENV_PYTHON%" "%BACKEND_DIR%\manage.py" migrate
-if errorlevel 1 (
-  echo [ERROR] Database migration failed.
-  goto :end
-)
+if errorlevel 1 goto :end
 
 echo.
 echo [3/4] Starting backend on port %BACKEND_PORT%...
@@ -93,27 +77,16 @@ start "EDMS-Backend" /min cmd /c "cd /d "%BACKEND_DIR%" && "%VENV_PYTHON%" manag
 timeout /t 2 /nobreak >nul
 
 echo [4/4] Starting frontend on port %FRONTEND_PORT%...
-start "EDMS-Frontend" /min cmd /c "cd /d "%FRONTEND_DIR%" && npm run dev 1>>"%FRONTEND_LOG%" 2>>&1"
-timeout /t 4 /nobreak >nul
+start "EDMS-Frontend" /min cmd /c "cd /d "%FRONTEND_DIR%" && npm run dev -- --host 127.0.0.1 --port %FRONTEND_PORT% 1>>"%FRONTEND_LOG%" 2>>&1"
+timeout /t 5 /nobreak >nul
 start "" "%FRONTEND_URL%"
 
 echo.
-echo ========================================
-echo EDMS services started
-echo ========================================
-echo Frontend: %FRONTEND_URL%
 echo Backend : %BACKEND_URL%
-echo Swagger : %BACKEND_URL%/swagger/
+echo Frontend: %FRONTEND_URL%
 echo Logs    : %LOG_DIR%
-echo.
-echo Tips:
-echo - Browser page will open automatically
-echo - Service logs are written to logs\backend.log and logs\frontend.log
-echo - Or run stop_services.bat for a quick shutdown
-echo ========================================
-echo.
 pause
-goto :end
+endlocal
 
 :check_path
 if not exist %~1 (
@@ -133,8 +106,4 @@ exit /b 0
 
 :port_found
 echo [ERROR] %~2 port %~1 is already in use by PID !PORT_IN_USE!.
-echo         Please stop that process first or change the port.
 exit /b 1
-
-:end
-endlocal

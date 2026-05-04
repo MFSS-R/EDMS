@@ -100,6 +100,8 @@ export default function AvatarCropper({ open, image, onCancel, onConfirm }) {
       title="调整头像"
       onCancel={onCancel}
       onOk={handleConfirm}
+      okText="保存头像"
+      cancelText="取消"
       confirmLoading={confirmLoading}
       width={720}
       destroyOnClose
