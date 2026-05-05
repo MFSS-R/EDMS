@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Button, Card, Descriptions, Empty, Select, Spin } from 'antd'
-import { ArrowLeftOutlined, EyeOutlined } from '@ant-design/icons'
-import { useQuery } from '@tanstack/react-query'
+import { Button, Card, Descriptions, Empty, Form, Input, Modal, Select, Spin, Space, message } from 'antd'
+import { ArrowLeftOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import SampleCard from '../components/SampleCard/SampleCard'
 import { sampleApi } from '../services/sample'
 import { testApi } from '../services/test'
@@ -14,7 +14,10 @@ const { Option } = Select
 export default function ExperimentDetail() {
   const { experimentId } = useParams()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [selectedTestType, setSelectedTestType] = useState(null)
+  const [editModalVisible, setEditModalVisible] = useState(false)
+  const [editForm] = Form.useForm()
 
   const { data: experimentData, isLoading: experimentLoading } = useQuery({
     queryKey: ['experiment', experimentId],
@@ -38,6 +41,23 @@ export default function ExperimentDetail() {
 
   const samples = samplesData?.results || samplesData?.data?.results || []
   const testTypes = testTypesData?.results || testTypesData?.data?.results || []
+
+  const updateMutation = useMutation({
+    mutationFn: (payload) =>
+      sampleApi.updateExperiment(experimentId, {
+        project: experiment.project,
+        ...payload,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['experiment', experimentId] })
+      queryClient.invalidateQueries({ queryKey: ['experiments'] })
+      message.success('实验更新成功')
+      setEditModalVisible(false)
+    },
+    onError: (error) => {
+      message.error(error.message || '更新失败')
+    },
+  })
 
   useEffect(() => {
     if (testTypes.length > 0 && !selectedTestType) {
@@ -70,11 +90,25 @@ export default function ExperimentDetail() {
           <h2>{experiment.name}</h2>
         </div>
         <div className="header-right">
-          <Button type="primary" icon={<EyeOutlined />}>
-            <Link to={`/projects/${experiment.project}`} style={{ color: '#fff' }}>
-              查看项目
-            </Link>
-          </Button>
+          <Space>
+            <Button
+              icon={<EditOutlined />}
+              onClick={() => {
+                editForm.setFieldsValue({
+                  name: experiment.name,
+                  description: experiment.description,
+                })
+                setEditModalVisible(true)
+              }}
+            >
+              编辑实验
+            </Button>
+            <Button type="primary" icon={<EyeOutlined />}>
+              <Link to={`/projects/${experiment.project}`} style={{ color: '#fff' }}>
+                查看项目
+              </Link>
+            </Button>
+          </Space>
         </div>
       </div>
 
@@ -129,6 +163,27 @@ export default function ExperimentDetail() {
           </div>
         )}
       </div>
+
+      <Modal
+        title="编辑实验"
+        open={editModalVisible}
+        onOk={() => editForm.submit()}
+        onCancel={() => setEditModalVisible(false)}
+        confirmLoading={updateMutation.isPending}
+      >
+        <Form form={editForm} layout="vertical" onFinish={(values) => updateMutation.mutate(values)}>
+          <Form.Item
+            name="name"
+            label="实验名称"
+            rules={[{ required: true, message: '请输入实验名称' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item name="description" label="描述">
+            <Input.TextArea rows={4} />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   )
 }
