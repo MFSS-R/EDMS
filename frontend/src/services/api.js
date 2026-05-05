@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { redirectToLoginOnce } from './authRedirect'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
@@ -50,10 +51,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       const isLoginRequest = error.config?.url?.includes('/auth/login/')
         || error.config?.url?.includes('/auth/register/')
-      if (!isLoginRequest) {
-        localStorage.removeItem('access_token')
-        localStorage.removeItem('refresh_token')
-        window.location.href = '/login'
+      const skipAuthRedirect = error.config?.skipAuthRedirect
+      if (!isLoginRequest && !skipAuthRedirect) {
+        redirectToLoginOnce()
       }
     }
 

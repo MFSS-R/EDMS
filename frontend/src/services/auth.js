@@ -3,7 +3,7 @@ import api from './api'
 export const authApi = {
   login: (data) => api.post('/auth/login/', data),
   register: (data) => api.post('/auth/register/', data),
-  logout: (data) => api.post('/auth/logout/', data),
+  logout: (data) => api.post('/auth/logout/', data, { skipAuthRedirect: true }),
   getProfile: () => api.get('/auth/profile/'),
   updateProfile: (data) => api.put('/auth/profile/', data, data instanceof FormData ? {
     headers: { 'Content-Type': 'multipart/form-data' }

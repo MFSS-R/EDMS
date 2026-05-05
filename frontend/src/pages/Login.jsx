@@ -1,14 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Form, Input, Button, Card, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { useAuthStore } from '../store/auth'
+import { clearAuthRedirectFlag } from '../services/authRedirect'
 import './Auth.css'
 
 export default function Login() {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { login } = useAuthStore()
+
+  useEffect(() => {
+    clearAuthRedirectFlag()
+  }, [])
 
   const handleSubmit = async (values) => {
     setLoading(true)

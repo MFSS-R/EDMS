@@ -426,9 +426,12 @@ export default function AlgorithmManagement() {
     }
   }
 
-  const handleFileUpload = (info) => {
-    const file = info.file?.originFileObj || info.file
-    if (!file) return false
+  const handleFileUpload = (file) => {
+    const scriptFile = file?.originFileObj || file
+    if (!scriptFile) {
+      message.error('未获取到脚本文件')
+      return false
+    }
 
     const reader = new FileReader()
     reader.onload = (event) => {
@@ -440,7 +443,7 @@ export default function AlgorithmManagement() {
     reader.onerror = () => {
       message.error('读取文件失败')
     }
-    reader.readAsText(file)
+    reader.readAsText(scriptFile, 'utf-8')
     return false
   }
 

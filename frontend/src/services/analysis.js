@@ -1,5 +1,6 @@
 import axios from 'axios'
 import api from './api'
+import { redirectToLoginOnce } from './authRedirect'
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
@@ -23,9 +24,7 @@ axiosInstance.interceptors.response.use(
   (response) => response.data,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('refresh_token')
-      window.location.href = '/login'
+      redirectToLoginOnce()
     }
     return Promise.reject(error.response?.data || error)
   }
