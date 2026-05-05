@@ -3,6 +3,8 @@
 """
 
 from django.contrib.auth import get_user_model
+from django.core.paginator import EmptyPage, Paginator
+from django.db.models import Q
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -10,6 +12,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from apps.utils.responses import error_response, success_response
+from .permissions import IsStaffUser
 from .serializers import (
     AdminPasswordResetSerializer,
     AdminUserCreateSerializer,
@@ -22,6 +25,18 @@ from .serializers import (
 )
 
 User = get_user_model()
+
+
+def _parse_bool_param(value):
+    if value is None:
+        return None
+
+    normalized = str(value).strip().lower()
+    if normalized in {'true', '1', 'yes', 'on'}:
+        return True
+    if normalized in {'false', '0', 'no', 'off'}:
+        return False
+    return None
 
 
 class LoginView(TokenObtainPairView):
@@ -117,13 +132,45 @@ class AdminUserListView(APIView):
     管理员用户列表
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsStaffUser]
 
     @extend_schema(summary='获取用户列表', responses={200: UserListSerializer(many=True)})
     def get(self, request):
         users = User.objects.all().order_by('-date_joined')
-        serializer = UserListSerializer(users, many=True, context={'request': request})
-        return success_response(serializer.data)
+
+        search = (request.query_params.get('search') or '').strip()
+        if search:
+            users = users.filter(
+                Q(username__icontains=search)
+                | Q(email__icontains=search)
+                | Q(real_name__icontains=search)
+            )
+
+        is_active = _parse_bool_param(request.query_params.get('is_active'))
+        if is_active is not None:
+            users = users.filter(is_active=is_active)
+
+        is_staff = _parse_bool_param(request.query_params.get('is_staff'))
+        if is_staff is not None:
+            users = users.filter(is_staff=is_staff)
+
+        total_count = users.count()
+        page = max(int(request.query_params.get('page', 1) or 1), 1)
+        page_size = max(int(request.query_params.get('page_size', 10) or 10), 1)
+
+        paginator = Paginator(users, page_size)
+        try:
+            page_obj = paginator.page(page)
+        except EmptyPage:
+            page_obj = paginator.page(paginator.num_pages or 1)
+
+        serializer = UserListSerializer(page_obj.object_list, many=True, context={'request': request})
+        return success_response({
+            'count': total_count,
+            'next': page_obj.next_page_number() if page_obj.has_next() else None,
+            'previous': page_obj.previous_page_number() if page_obj.has_previous() else None,
+            'results': serializer.data,
+        })
 
     @extend_schema(summary='创建用户', request=AdminUserCreateSerializer, responses={201: UserSerializer})
     def post(self, request):
@@ -139,7 +186,7 @@ class AdminUserDetailView(APIView):
     管理员用户详情
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsStaffUser]
 
     def get_object(self, pk):
         try:
@@ -180,6 +227,14 @@ class AdminUserDetailView(APIView):
         user = self.get_object(pk)
         if not user:
             return error_response('用户不存在', status.HTTP_404_NOT_FOUND)
+
+        if request.user.pk == user.pk:
+            return error_response('不能删除自己', status.HTTP_400_BAD_REQUEST)
+
+        remaining_admin_count = User.objects.filter(is_staff=True, is_active=True).exclude(pk=user.pk).count()
+        if user.is_staff and user.is_active and remaining_admin_count == 0:
+            return error_response('不能删除最后一个管理员', status.HTTP_400_BAD_REQUEST)
+
         user.delete()
         return success_response(message='用户删除成功')
 
@@ -189,7 +244,7 @@ class AdminPasswordResetView(APIView):
     管理员重置用户密码
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsStaffUser]
 
     @extend_schema(summary='重置用户密码', request=AdminPasswordResetSerializer, responses={200: '密码重置成功'})
     def post(self, request, pk):
@@ -210,7 +265,7 @@ class AdminUserToggleActiveView(APIView):
     管理员切换用户激活状态
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsStaffUser]
 
     @extend_schema(summary='切换用户激活状态', responses={200: UserSerializer})
     def post(self, request, pk):

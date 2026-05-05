@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { Card, Table, Button, Space, Tag, Modal, Form, Input, Select, Switch, message, Popconfirm, InputNumber } from 'antd'
-import { PlusOutlined, EditOutlined, LockOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons'
+import { PlusOutlined, EditOutlined, LockOutlined, SearchOutlined, ReloadOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { authApi } from '../services/auth'
+import { useAuthStore } from '../store/auth'
 import './Analysis.css'
 
 const { Option } = Select
 
 export default function UserManagement() {
   const queryClient = useQueryClient()
+  const { user: currentAuthUser } = useAuthStore()
   const [form] = Form.useForm()
   const [editForm] = Form.useForm()
   const [passwordForm] = Form.useForm()
@@ -91,6 +93,17 @@ export default function UserManagement() {
       } else {
         message.error(errMsg)
       }
+    },
+  })
+
+  const deleteUserMutation = useMutation({
+    mutationFn: (id) => authApi.deleteAdminUser(id),
+    onSuccess: () => {
+      message.success('用户删除成功')
+      queryClient.invalidateQueries({ queryKey: ['adminUsers'] })
+    },
+    onError: (error) => {
+      message.error(error?.message || '删除失败')
     },
   })
 
@@ -223,7 +236,7 @@ export default function UserManagement() {
     {
       title: '操作',
       key: 'action',
-      width: 240,
+      width: 320,
       render: (_, record) => (
         <Space size="small" wrap>
           <Button
@@ -249,6 +262,34 @@ export default function UserManagement() {
           >
             {record.is_active ? '禁用' : '启用'}
           </Button>
+          <Popconfirm
+            title="确定删除这个用户吗？"
+            description="删除后将无法恢复。"
+            onConfirm={() => deleteUserMutation.mutate(record.id)}
+            disabled={currentAuthUser?.id === record.id}
+            okText="删除"
+            cancelText="取消"
+            overlayClassName="user-delete-popconfirm"
+            okButtonProps={{
+              danger: true,
+              style: {
+                color: '#ffffff',
+                backgroundColor: '#dc2626',
+                borderColor: '#dc2626',
+              },
+            }}
+          >
+            <Button
+              type="link"
+              danger
+              size="small"
+              icon={<DeleteOutlined />}
+              disabled={currentAuthUser?.id === record.id}
+              className="user-management-delete-btn"
+            >
+              删除
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -314,6 +355,7 @@ export default function UserManagement() {
 
       <Card>
         <Table
+          className="user-management-table"
           columns={columns}
           dataSource={users}
           rowKey="id"

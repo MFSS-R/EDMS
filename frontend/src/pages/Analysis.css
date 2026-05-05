@@ -63,6 +63,53 @@
   color: #ffffff !important;
 }
 
+.user-delete-popconfirm .ant-popconfirm-buttons .ant-btn-dangerous,
+.user-delete-popconfirm .ant-popconfirm-buttons .ant-btn-dangerous.ant-btn-primary {
+  background: var(--color-danger) !important;
+  border-color: var(--color-danger) !important;
+  color: #ffffff !important;
+}
+
+.user-delete-popconfirm .ant-popconfirm-buttons .ant-btn-dangerous .anticon,
+.user-delete-popconfirm .ant-popconfirm-buttons .ant-btn-dangerous.ant-btn-primary .anticon {
+  color: #ffffff !important;
+}
+
+.user-delete-popconfirm .ant-popconfirm-buttons .ant-btn-dangerous:hover,
+.user-delete-popconfirm .ant-popconfirm-buttons .ant-btn-dangerous.ant-btn-primary:hover {
+  background: var(--color-danger-dark) !important;
+  border-color: var(--color-danger-dark) !important;
+  color: #ffffff !important;
+}
+
+.user-management-table .ant-btn-link.ant-btn-dangerous.user-management-delete-btn,
+.user-management-table .ant-btn-color-dangerous.ant-btn-variant-link.user-management-delete-btn {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: var(--color-danger) !important;
+}
+
+.user-management-table .ant-btn-link.ant-btn-dangerous.user-management-delete-btn .anticon,
+.user-management-table .ant-btn-color-dangerous.ant-btn-variant-link.user-management-delete-btn .anticon {
+  color: var(--color-danger) !important;
+}
+
+.user-management-table .ant-btn-link.ant-btn-dangerous.user-management-delete-btn:hover,
+.user-management-table .ant-btn-link.ant-btn-dangerous.user-management-delete-btn:focus,
+.user-management-table .ant-btn-color-dangerous.ant-btn-variant-link.user-management-delete-btn:hover,
+.user-management-table .ant-btn-color-dangerous.ant-btn-variant-link.user-management-delete-btn:focus {
+  background: var(--color-danger) !important;
+  border-color: var(--color-danger) !important;
+  color: #ffffff !important;
+}
+
+.user-management-table .ant-btn-link.ant-btn-dangerous.user-management-delete-btn:hover .anticon,
+.user-management-table .ant-btn-link.ant-btn-dangerous.user-management-delete-btn:focus .anticon,
+.user-management-table .ant-btn-color-dangerous.ant-btn-variant-link.user-management-delete-btn:hover .anticon,
+.user-management-table .ant-btn-color-dangerous.ant-btn-variant-link.user-management-delete-btn:focus .anticon {
+  color: #ffffff !important;
+}
+
 /* Card extra 区域响应式 */
 .ant-card-extra {
   display: flex;
