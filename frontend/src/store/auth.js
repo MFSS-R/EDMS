@@ -35,11 +35,10 @@ export const useAuthStore = create(
       register: async (data) => {
         const response = await authApi.register(data)
         const responseData = response.data || response
-        if (responseData.token) {
+        if (responseData.token?.access) {
           get().setTokens(responseData.token.access, responseData.token.refresh)
           set({ user: responseData.user })
         }
-        set({ isAuthenticated: true })
         return response
       },
       

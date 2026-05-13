@@ -5,6 +5,7 @@ import {
   Checkbox,
   Collapse,
   Divider,
+  Empty,
   Input,
   Modal,
   Popconfirm,
@@ -825,24 +826,30 @@ export default function DataManagement() {
       </Card>
 
       <div className="project-cards">
-        {projects.map((project) => (
-          <Card key={project.id} className="project-card">
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: 16,
-              }}
-            >
-              <h3 style={{ margin: 0 }}>{project.name}</h3>
-              <span style={{ fontSize: 12, color: '#666' }}>{project.experiments_count || 0} 个实验</span>
-            </div>
-            <Collapse defaultActiveKey={[]}>
-              {(project.experiments || []).map((experiment) => renderExperimentPanel(experiment))}
-            </Collapse>
+        {projects.length === 0 ? (
+          <Card>
+            <Empty description="暂无项目，请先创建项目/样品" />
           </Card>
-        ))}
+        ) : (
+          projects.map((project) => (
+            <Card key={project.id} className="project-card">
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 16,
+                }}
+              >
+                <h3 style={{ margin: 0 }}>{project.name}</h3>
+                <span style={{ fontSize: 12, color: '#666' }}>{project.experiments_count || 0} 个实验</span>
+              </div>
+              <Collapse defaultActiveKey={[]}>
+                {(project.experiments || []).map((experiment) => renderExperimentPanel(experiment))}
+              </Collapse>
+            </Card>
+          ))
+        )}
       </div>
 
       <Modal

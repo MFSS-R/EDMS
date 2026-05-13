@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   Descriptions,
+  Empty,
   Form,
   Input,
   Modal,
@@ -38,27 +39,32 @@ export default function ProjectDetail() {
   const [form] = Form.useForm()
   const [batchForm] = Form.useForm()
 
-  const { data: projectData, isLoading: projectLoading } = useQuery({
+  const { data: projectData, isLoading: projectLoading, isError: projectError } = useQuery({
     queryKey: ['project', id],
     queryFn: () => projectApi.getDetail(id),
+    retry: false,
   })
+
+  const project = projectData?.data || projectData
 
   const { data: samplesData, isLoading: samplesLoading } = useQuery({
     queryKey: ['samples', id],
     queryFn: () => sampleApi.getList({ project_id: id, page_size: 500 }),
+    enabled: !!project,
   })
 
   const { data: sampleTypesData } = useQuery({
     queryKey: ['sampleTypes', id],
     queryFn: () => sampleApi.getTypeList({ project: id, page_size: 100 }),
+    enabled: !!project,
   })
 
   const { data: experimentsData } = useQuery({
     queryKey: ['experiments', id],
     queryFn: () => sampleApi.getExperimentList({ project: id, page_size: 100 }),
+    enabled: !!project,
   })
 
-  const project = projectData?.data || projectData
   const samplesResponse = samplesData?.data || samplesData
   const samples = Array.isArray(samplesResponse?.results) ? samplesResponse.results : []
   const sampleTypesResponse = sampleTypesData?.data || sampleTypesData
@@ -194,6 +200,28 @@ export default function ProjectDetail() {
 
   if (projectLoading) {
     return <div style={{ padding: 48 }}>加载中...</div>
+  }
+
+  if (projectError || !project) {
+    return (
+      <div className="project-detail">
+        <div className="page-header">
+          <Space>
+            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/projects')}>
+              返回
+            </Button>
+            <h2 style={{ margin: 0 }}>项目详情</h2>
+          </Space>
+        </div>
+        <Card>
+          <Empty description="项目不存在或已被删除">
+            <Button type="primary" onClick={() => navigate('/projects')}>
+              返回项目列表
+            </Button>
+          </Empty>
+        </Card>
+      </div>
+    )
   }
 
   return (

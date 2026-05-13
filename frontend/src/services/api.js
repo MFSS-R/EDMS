@@ -20,9 +20,53 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
+async function refreshAccessToken() {
+  const refresh = localStorage.getItem('refresh_token')
+  if (!refresh) {
+    return null
+  }
+
+  const response = await api.post('/auth/token/refresh/', { refresh }, {
+    skipAuthRefresh: true,
+    skipAuthRedirect: true,
+  })
+  const data = response.data || response
+  if (!data?.access) {
+    return null
+  }
+
+  localStorage.setItem('access_token', data.access)
+  if (data.refresh) {
+    localStorage.setItem('refresh_token', data.refresh)
+  }
+  return data
+}
+
 api.interceptors.response.use(
   (response) => response.data,
-  (error) => {
+  async (error) => {
+    if (error.response?.status === 401) {
+      const originalRequest = error.config || {}
+      const isAuthRequest = originalRequest.url?.includes('/auth/login/')
+        || originalRequest.url?.includes('/auth/register/')
+        || originalRequest.url?.includes('/auth/token/refresh/')
+      const skipAuthRefresh = originalRequest.skipAuthRefresh
+
+      if (!isAuthRequest && !skipAuthRefresh && !originalRequest._retry) {
+        originalRequest._retry = true
+        try {
+          const token = await refreshAccessToken()
+          if (token?.access) {
+            originalRequest.headers = originalRequest.headers || {}
+            originalRequest.headers.Authorization = `Bearer ${token.access}`
+            return api(originalRequest)
+          }
+        } catch {
+          // Fall through to redirect and normalized error handling.
+        }
+      }
+    }
+
     const errorData = error.response?.data
     let errorMessage = '网络错误，请稍后重试'
 

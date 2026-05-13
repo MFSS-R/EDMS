@@ -9,6 +9,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from apps.utils.responses import error_response, success_response
@@ -61,8 +62,15 @@ class RegisterView(APIView):
         serializer = UserRegisterSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             user = serializer.save()
+            refresh = RefreshToken.for_user(user)
             return success_response(
-                UserSerializer(user).data,
+                {
+                    'user': UserSerializer(user).data,
+                    'token': {
+                        'access': str(refresh.access_token),
+                        'refresh': str(refresh),
+                    },
+                },
                 '注册成功',
                 status.HTTP_201_CREATED,
             )
@@ -78,6 +86,15 @@ class LogoutView(APIView):
 
     @extend_schema(summary='用户登出')
     def post(self, request):
+        refresh = request.data.get('refresh')
+        if refresh:
+            try:
+                token = RefreshToken(refresh)
+                blacklist = getattr(token, 'blacklist', None)
+                if blacklist:
+                    blacklist()
+            except Exception:
+                pass
         return success_response(message='登出成功')
 
 

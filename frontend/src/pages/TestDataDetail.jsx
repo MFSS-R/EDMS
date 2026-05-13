@@ -44,24 +44,27 @@ export default function TestDataDetail() {
   const [selectedAlgorithmId, setSelectedAlgorithmId] = useState(null)
   const [form] = Form.useForm()
 
-  const { data: testData, isLoading } = useQuery({
+  const { data: testData, isLoading, isError } = useQuery({
     queryKey: ['testDataDetail', id],
     queryFn: () => testApi.getDataDetail(id),
+    retry: false,
   })
+
+  const data = testData?.data
 
   const { data: plotDataResponse, isLoading: plotDataLoading, refetch: refetchPlotData } = useQuery({
     queryKey: ['plotData', id],
     queryFn: () => analysisApi.getPlotDataByTestData(id),
+    enabled: !!data,
     retry: false,
   })
 
   const { data: algorithmsData } = useQuery({
-    queryKey: ['algorithmsForTestData', testData?.data?.test_type],
-    queryFn: () => analysisApi.getAlgorithmList({ test_type: testData?.data?.test_type, page_size: 100 }),
-    enabled: !!testData?.data?.test_type,
+    queryKey: ['algorithmsForTestData', data?.test_type],
+    queryFn: () => analysisApi.getAlgorithmList({ test_type: data?.test_type, page_size: 100 }),
+    enabled: !!data?.test_type,
   })
 
-  const data = testData?.data
   const files = data?.files || []
   const plotData = plotDataResponse?.data
   const algorithms = algorithmsData?.results || algorithmsData?.data?.results || []
@@ -179,6 +182,24 @@ export default function TestDataDetail() {
 
   if (isLoading) {
     return <div style={{ padding: 48 }}>加载中...</div>
+  }
+
+  if (isError || !data) {
+    return (
+      <div className="test-data-detail">
+        <div className="page-header">
+          <Space>
+            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)}>
+              返回
+            </Button>
+            <h2>测试数据详情</h2>
+          </Space>
+        </div>
+        <Card>
+          <Empty description="测试数据不存在或已被删除" />
+        </Card>
+      </div>
+    )
   }
 
   return (

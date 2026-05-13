@@ -33,6 +33,7 @@ const baseMenuItems = [
     label: '数据管理',
     children: [
       { key: '/data-management/main', label: '数据管理' },
+      { key: '/data-management/agent-imports', label: 'Hermes Agent 导入' },
       { key: '/test-data', label: '测试数据查看' },
     ],
   },

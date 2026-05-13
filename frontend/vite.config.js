@@ -10,16 +10,21 @@ export default defineConfig({
     },
   },
   server: {
-    port: 8000,
+    port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true,
       },
       '/media': {
-        target: 'http://localhost:3000',
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true,
       },
     },
+  },
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.js',
+    globals: true,
   },
 })

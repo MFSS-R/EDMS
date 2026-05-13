@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "package_id": "hermes-20260513-0001",
+  "created_at": "2026-05-13T10:00:00Z",
+  "source": {
+    "agent_id": "hermes-lab-a",
+    "agent_version": "0.1.0",
+    "host": "lab-a-workstation-01"
+  },
+  "defaults": {
+    "project_code": "EDMS-DEMO",
+    "tester": "Hermes Agent",
+    "instrument": "Rigaku SmartLab",
+    "timezone": "Asia/Shanghai"
+  },
+  "items": [
+    {
+      "external_id": "hermes-record-0001",
+      "project_code": "EDMS-DEMO",
+      "sample_id": "SAMPLE-2026-001",
+      "test_type": "XRD",
+      "test_date": "2026-05-13",
+      "instrument": "Rigaku SmartLab",
+      "tester": "Hermes Agent",
+      "notes": "Imported from Hermes package hermes-20260513-0001.",
+      "metadata": {
+        "scan_mode": "theta-2theta",
+        "voltage_kv": 40,
+        "current_ma": 30
+      },
+      "files": [
+        {
+          "path": "files/SAMPLE-2026-001/XRD/xrd-001.csv",
+          "role": "raw",
+          "sha256": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab",
+          "mime_type": "text/csv",
+          "size_bytes": 2048
+        }
+      ]
+    },
+    {
+      "external_id": "hermes-record-0002",
+      "project_code": "EDMS-DEMO",
+      "sample_id": "SAMPLE-2026-001",
+      "test_type": "VSM",
+      "test_date": "2026-05-13",
+      "files": [
+        {
+          "path": "files/SAMPLE-2026-001/VSM/vsm-001.csv",
+          "role": "processed",
+          "mime_type": "text/csv",
+          "size_bytes": 4096
+        },
+        {
+          "path": "files/SAMPLE-2026-001/VSM/vsm-raw.dat",
+          "role": "raw",
+          "mime_type": "application/octet-stream",
+          "size_bytes": 16384
+        }
+      ]
+    }
+  ]
+}

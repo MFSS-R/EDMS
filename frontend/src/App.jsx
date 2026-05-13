@@ -12,6 +12,7 @@ import Samples from './pages/Samples'
 import SampleDetail from './pages/SampleDetail'
 import AddSample from './pages/AddSample'
 import DataManagement from './pages/DataManagement'
+import AgentImports from './pages/AgentImports'
 import TestData from './pages/TestData'
 import AddTestData from './pages/AddTestData'
 import TestDataDetail from './pages/TestDataDetail'
@@ -66,6 +67,7 @@ function App() {
           <Route path="samples/add" element={<AddSample />} />
           <Route path="samples/:id" element={<SampleDetail />} />
           <Route path="data-management/main" element={<DataManagement />} />
+          <Route path="data-management/agent-imports" element={<AgentImports />} />
           <Route path="test-data" element={<TestData />} />
           <Route path="test-data/add" element={<AddTestData />} />
           <Route path="test-data/:id" element={<TestDataDetail />} />

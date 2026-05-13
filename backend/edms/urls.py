@@ -15,6 +15,7 @@ urlpatterns = [
     path('api/samples/', include('apps.samples.urls')),
     path('api/tests/', include('apps.tests.urls')),
     path('api/analysis/', include('apps.analysis.urls')),
+    path('api/agent/import-jobs/', include('apps.agent_imports.urls')),
     path('api/system/version/', AppVersionView.as_view(), name='app-version'),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

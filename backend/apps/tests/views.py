@@ -5,14 +5,14 @@ import os
 import time
 import uuid
 import json
+from pathlib import PurePosixPath
 from rest_framework import viewsets, status, parsers
 from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import FileResponse
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes, inline_serializer
 from rest_framework import serializers
+from django.db import transaction
 
 from .models import TestType, TestData, TestFile
 from .serializers import (
@@ -31,6 +31,52 @@ from apps.samples.models import Sample
 from apps.utils.responses import success_response, error_response
 from django.http import HttpResponse
 from django.utils import timezone
+
+
+def _delete_file_paths(file_paths):
+    for file_path in file_paths:
+        if file_path and os.path.isfile(file_path):
+            os.remove(file_path)
+
+
+def _record_created_file(created_file_paths, test_file):
+    if test_file.file_path:
+        created_file_paths.append(test_file.file_path.path)
+    return test_file
+
+
+def _safe_zip_member_name(info):
+    filename = info.filename
+    for encoding in ['utf-8', 'gbk', 'gb2312', 'big5']:
+        try:
+            filename = info.filename.encode('cp437').decode(encoding)
+            break
+        except Exception:
+            continue
+
+    normalized = filename.replace('\\', '/')
+    if (
+        not normalized
+        or normalized.startswith('/')
+        or os.path.isabs(filename)
+        or os.path.isabs(normalized)
+        or (len(normalized) >= 2 and normalized[1] == ':')
+    ):
+        raise ValueError('zip文件包含不安全路径')
+
+    parts = PurePosixPath(normalized).parts
+    if any(part in ('..', '') for part in parts):
+        raise ValueError('zip文件包含不安全路径')
+
+    return normalized
+
+
+def _safe_zip_target_path(root_dir, member_name):
+    root_dir = os.path.abspath(root_dir)
+    target_path = os.path.abspath(os.path.join(root_dir, member_name))
+    if os.path.commonpath([root_dir, target_path]) != root_dir:
+        raise ValueError('zip文件包含不安全路径')
+    return target_path
 
 
 class TestTypeViewSet(viewsets.ModelViewSet):
@@ -151,26 +197,35 @@ class TestDataSetViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        test_data = TestData.objects.create(
-            sample=serializer.validated_data['sample'],
-            test_type=serializer.validated_data['test_type'],
-            test_date=serializer.validated_data.get('test_date'),
-            instrument=serializer.validated_data.get('instrument', ''),
-            tester=serializer.validated_data.get('tester', ''),
-            structured_data=serializer.validated_data.get('structured_data', {}),
-            notes=serializer.validated_data.get('notes', '')
-        )
-        
-        files = serializer.validated_data.get('files', [])
-        for file in files:
-            ext = os.path.splitext(file.name)[1]
-            saved_filename = f"{uuid.uuid4()}{ext}"
-            test_file = TestFile.objects.create(
-                test_data=test_data,
-                original_filename=file.name,
-                saved_filename=saved_filename,
-                file_path=file
-            )
+        created_file_paths = []
+        try:
+            with transaction.atomic():
+                test_data = TestData.objects.create(
+                    sample=serializer.validated_data['sample'],
+                    test_type=serializer.validated_data['test_type'],
+                    test_date=serializer.validated_data.get('test_date'),
+                    instrument=serializer.validated_data.get('instrument', ''),
+                    tester=serializer.validated_data.get('tester', ''),
+                    structured_data=serializer.validated_data.get('structured_data', {}),
+                    notes=serializer.validated_data.get('notes', '')
+                )
+                
+                files = serializer.validated_data.get('files', [])
+                for file in files:
+                    ext = os.path.splitext(file.name)[1]
+                    saved_filename = f"{uuid.uuid4()}{ext}"
+                    _record_created_file(
+                        created_file_paths,
+                        TestFile.objects.create(
+                            test_data=test_data,
+                            original_filename=file.name,
+                            saved_filename=saved_filename,
+                            file_path=file
+                        )
+                    )
+        except Exception:
+            _delete_file_paths(created_file_paths)
+            return error_response('测试数据创建失败', status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return success_response(
             TestDataSerializer(test_data).data,
@@ -254,16 +309,25 @@ class TestDataSetViewSet(viewsets.ModelViewSet):
             return error_response('测试数据不存在', status.HTTP_404_NOT_FOUND)
         
         uploaded_files = []
-        for file in files:
-            ext = os.path.splitext(file.name)[1]
-            saved_filename = f"{uuid.uuid4()}{ext}"
-            test_file = TestFile.objects.create(
-                test_data=test_data,
-                original_filename=file.name,
-                saved_filename=saved_filename,
-                file_path=file
-            )
-            uploaded_files.append(test_file)
+        created_file_paths = []
+        try:
+            with transaction.atomic():
+                for file in files:
+                    ext = os.path.splitext(file.name)[1]
+                    saved_filename = f"{uuid.uuid4()}{ext}"
+                    test_file = _record_created_file(
+                        created_file_paths,
+                        TestFile.objects.create(
+                            test_data=test_data,
+                            original_filename=file.name,
+                            saved_filename=saved_filename,
+                            file_path=file
+                        )
+                    )
+                    uploaded_files.append(test_file)
+        except Exception:
+            _delete_file_paths(created_file_paths)
+            return error_response('文件上传失败', status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return success_response(
             TestFileSerializer(uploaded_files, many=True, context={'request': request}).data,
@@ -289,7 +353,6 @@ class TestDataSetViewSet(viewsets.ModelViewSet):
         创建空文件夹结构并打包成zip文件
         """
         import tempfile
-        import shutil
         from zipfile import ZipFile
         
         sample_ids = request.data.get('sample_ids', [])
@@ -342,9 +405,9 @@ class TestDataSetViewSet(viewsets.ModelViewSet):
         上传数据包
         解析zip文件并创建测试数据
         """
+        import re
         import tempfile
-        import shutil
-        from zipfile import ZipFile
+        from zipfile import BadZipFile, ZipFile
         
         file = request.FILES.get('file')
         if not file:
@@ -356,163 +419,136 @@ class TestDataSetViewSet(viewsets.ModelViewSet):
         created_count = 0
         errors = []
         
-        with tempfile.TemporaryDirectory() as temp_dir:
-            # 保存上传的zip文件
-            zip_path = os.path.join(temp_dir, file.name)
-            with open(zip_path, 'wb') as f:
-                for chunk in file.chunks():
-                    f.write(chunk)
-            
-            # 解压zip文件
-            with ZipFile(zip_path, 'r') as zipf:
-                # 解决Windows zip文件名编码问题
-                for info in zipf.infolist():
-                    # 尝试多种编码解码文件名
-                    for encoding in ['utf-8', 'gbk', 'gb2312', 'big5']:
-                        try:
-                            filename = info.filename.encode('cp437').decode(encoding)
-                            break
-                        except:
+        created_file_paths = []
+        try:
+            with tempfile.TemporaryDirectory() as temp_dir:
+                zip_path = os.path.join(temp_dir, 'upload.zip')
+                extract_dir = os.path.join(temp_dir, 'extracted')
+                os.makedirs(extract_dir, exist_ok=True)
+
+                with open(zip_path, 'wb') as f:
+                    for chunk in file.chunks():
+                        f.write(chunk)
+                
+                with ZipFile(zip_path, 'r') as zipf:
+                    for info in zipf.infolist():
+                        member_name = _safe_zip_member_name(info)
+                        target_path = _safe_zip_target_path(extract_dir, member_name)
+                        if info.is_dir() or member_name.endswith('/'):
+                            os.makedirs(target_path, exist_ok=True)
                             continue
-                    else:
-                        # 所有编码都失败，使用原始文件名
-                        filename = info.filename
-                    
-                    # 解压到目标路径
-                    if not filename.endswith('/'):
-                        target_path = os.path.join(temp_dir, filename)
+
                         os.makedirs(os.path.dirname(target_path), exist_ok=True)
                         with open(target_path, 'wb') as f:
                             f.write(zipf.read(info))
-            
-            # 自动检测实际的样品目录
-            # 检查是否需要进入根目录
-            # 规则：如果顶层只有一个目录，且该目录名不像样品ID（不包含"-"或"_"等样品ID特征），才进入
-            import re
-            actual_root = temp_dir
-            temp_dir_contents = [d for d in os.listdir(temp_dir) if d != file.name and os.path.isdir(os.path.join(temp_dir, d))]
-            
-            if len(temp_dir_contents) == 1:
-                potential_root = os.path.join(temp_dir, temp_dir_contents[0])
-                potential_name = temp_dir_contents[0]
                 
-                # 检查这个目录名是否像样品ID（样品ID通常包含"-", "_", 数字等）
-                is_sample_id_pattern = bool(re.search(r'[-_]', potential_name)) and any(c.isdigit() for c in potential_name)
+                actual_root = extract_dir
+                temp_dir_contents = [
+                    d for d in os.listdir(extract_dir)
+                    if os.path.isdir(os.path.join(extract_dir, d))
+                ]
                 
-                # 如果目录名不像样品ID，则进入该目录
-                if not is_sample_id_pattern:
-                    actual_root = potential_root
-            
-            import logging
-            import tempfile
-            import traceback
-            
-            debug_file = os.path.join(tempfile.gettempdir(), 'edms_debug.txt')
-            
-            with open(debug_file, 'w', encoding='utf-8') as f:
-                f.write(f"=== DEBUG ===\n")
-                f.write(f"temp_dir: {temp_dir}\n")
-                f.write(f"file.name: {file.name}\n")
-                f.write(f"temp_dir_contents: {temp_dir_contents}\n")
-                f.write(f"actual_root: {actual_root}\n")
-                f.write(f"contents: {os.listdir(actual_root)}\n")
-                f.write(f"\n")
-            
-            # 遍历实际的样品目录
-            for sample_dir in os.listdir(actual_root):
-                if sample_dir == file.name or sample_dir.startswith('.') or sample_dir.startswith('__'):
-                    continue
+                if len(temp_dir_contents) == 1:
+                    potential_root = os.path.join(extract_dir, temp_dir_contents[0])
+                    potential_name = temp_dir_contents[0]
+                    is_sample_id_pattern = bool(re.search(r'[-_]', potential_name)) and any(c.isdigit() for c in potential_name)
+                    if not is_sample_id_pattern:
+                        actual_root = potential_root
                 
-                sample_path = os.path.join(actual_root, sample_dir)
-                if not os.path.isdir(sample_path):
-                    continue
-                
-                with open(debug_file, 'a', encoding='utf-8') as f:
-                    f.write(f"processing sample: {sample_dir}\n")
-                
-                # 查找对应的样品
-                try:
-                    sample = Sample.objects.get(sample_id=sample_dir)
-                except Sample.DoesNotExist:
-                    errors.append(f'样品 {sample_dir} 不存在')
-                    with open(debug_file, 'a', encoding='utf-8') as f:
-                        f.write(f"  sample not found: {sample_dir}\n")
-                    continue
-                
-                # 遍历测试类型文件夹
-                for test_type_dir in os.listdir(sample_path):
-                    test_type_path = os.path.join(sample_path, test_type_dir)
-                    if not os.path.isdir(test_type_path):
-                        continue
-                    
-                    # 先收集该文件夹下的所有有效文件（排除隐藏文件和空格开头的文件）
-                    file_list = []
-                    for file_name in os.listdir(test_type_path):
-                        file_path_item = os.path.join(test_type_path, file_name)
-                        if os.path.isfile(file_path_item) and not file_name.startswith('.') and not file_name.startswith('__') and not file_name.startswith(' '):
-                            file_list.append((file_name.strip(), file_path_item))
-                    
-                    with open(debug_file, 'a', encoding='utf-8') as f:
-                        f.write(f"  sample={sample_dir}, test_type={test_type_dir}, files={len(file_list)}\n")
-                        f.write(f"    test_type_path: {test_type_path}\n")
-                        f.write(f"    files in test_type folder: {os.listdir(test_type_path)}\n")
-                        # 递归检查是否有子文件夹包含文件
-                        for root, dirs, files in os.walk(test_type_path):
-                            if files:
-                                f.write(f"    found files at {root}: {files}\n")
-                    
-                    # 如果没有文件，跳过此测试类型文件夹
-                    if not file_list:
-                        continue
-                    
-                    # 查找对应的测试类型
-                    try:
-                        test_type = TestType.objects.get(name=test_type_dir, project=sample.sample_type.project)
-                    except TestType.DoesNotExist:
-                        # 自动创建测试类型
-                        test_type = TestType.objects.create(
-                            name=test_type_dir,
-                            project=sample.sample_type.project,
-                            description='自动创建'
-                        )
-                    
-                    # 创建测试数据记录
-                    test_data = TestData.objects.create(
-                        sample=sample,
-                        test_type=test_type,
-                        test_date=timezone.now().date()
-                    )
-                    
-                    # 处理测试文件
-                    for file_name, file_path_item in file_list:
-                        from django.utils import timezone as tz
-                        from django.core.files.base import ContentFile
-                        with open(file_path_item, 'rb') as f:
-                            file_content = f.read()
+                with transaction.atomic():
+                    # 遍历实际的样品目录
+                    for sample_dir in os.listdir(actual_root):
+                        if sample_dir.startswith('.') or sample_dir.startswith('__'):
+                            continue
                         
-                        ext = os.path.splitext(file_name)[1]
-                        # 命名规则: 样品名称-测试类型-添加时间-文件原名称
-                        add_time = tz.now().strftime('%Y%m%d%H%M%S')
-                        sample_name = sample.name or sample.sample_id
-                        # 清理文件名中的特殊字符
-                        safe_sample_name = sample_name.replace(' ', '_').replace('/', '-').replace('\\', '-')
-                        safe_test_type = test_type_dir.replace(' ', '_').replace('/', '-').replace('\\', '-')
-                        safe_orig_name = file_name.replace('/', '-').replace('\\', '-')
-                        saved_filename = f"{safe_sample_name}-{safe_test_type}-{add_time}-{safe_orig_name}"
-                        # 确保文件名不超过255个字符
-                        if len(saved_filename) > 255 - len(ext):
-                            saved_filename = saved_filename[:255 - len(ext)]
-                        saved_filename = saved_filename + ext
+                        sample_path = os.path.join(actual_root, sample_dir)
+                        if not os.path.isdir(sample_path):
+                            continue
                         
-                        content_file = ContentFile(file_content, name=saved_filename)
-                        TestFile.objects.create(
-                            test_data=test_data,
-                            original_filename=file_name,
-                            saved_filename=saved_filename,
-                            file_path=content_file
-                        )
-                    
-                    created_count += 1
+                        # 查找对应的样品
+                        try:
+                            sample = Sample.objects.get(sample_id=sample_dir)
+                        except Sample.DoesNotExist:
+                            errors.append(f'样品 {sample_dir} 不存在')
+                            continue
+                        
+                        # 遍历测试类型文件夹
+                        for test_type_dir in os.listdir(sample_path):
+                            test_type_path = os.path.join(sample_path, test_type_dir)
+                            if not os.path.isdir(test_type_path):
+                                continue
+                            
+                            # 先收集该文件夹下的所有有效文件（排除隐藏文件和空格开头的文件）
+                            file_list = []
+                            for file_name in os.listdir(test_type_path):
+                                file_path_item = os.path.join(test_type_path, file_name)
+                                if os.path.isfile(file_path_item) and not file_name.startswith('.') and not file_name.startswith('__') and not file_name.startswith(' '):
+                                    file_list.append((file_name.strip(), file_path_item))
+                            
+                            # 如果没有文件，跳过此测试类型文件夹
+                            if not file_list:
+                                continue
+                            
+                            # 查找对应的测试类型
+                            try:
+                                test_type = TestType.objects.get(name=test_type_dir, project=sample.sample_type.project)
+                            except TestType.DoesNotExist:
+                                # 自动创建测试类型
+                                test_type = TestType.objects.create(
+                                    name=test_type_dir,
+                                    project=sample.sample_type.project,
+                                    description='自动创建'
+                                )
+                            
+                            # 创建测试数据记录
+                            test_data = TestData.objects.create(
+                                sample=sample,
+                                test_type=test_type,
+                                test_date=timezone.now().date()
+                            )
+                            
+                            # 处理测试文件
+                            for file_name, file_path_item in file_list:
+                                from django.utils import timezone as tz
+                                from django.core.files.base import ContentFile
+                                with open(file_path_item, 'rb') as f:
+                                    file_content = f.read()
+                                
+                                ext = os.path.splitext(file_name)[1]
+                                # 命名规则: 样品名称-测试类型-添加时间-文件原名称
+                                add_time = tz.now().strftime('%Y%m%d%H%M%S')
+                                sample_name = sample.name or sample.sample_id
+                                # 清理文件名中的特殊字符
+                                safe_sample_name = sample_name.replace(' ', '_').replace('/', '-').replace('\\', '-')
+                                safe_test_type = test_type_dir.replace(' ', '_').replace('/', '-').replace('\\', '-')
+                                safe_orig_name = file_name.replace('/', '-').replace('\\', '-')
+                                saved_filename = f"{safe_sample_name}-{safe_test_type}-{add_time}-{safe_orig_name}"
+                                # 确保文件名不超过255个字符
+                                if len(saved_filename) > 255 - len(ext):
+                                    saved_filename = saved_filename[:255 - len(ext)]
+                                saved_filename = saved_filename + ext
+                                
+                                content_file = ContentFile(file_content, name=saved_filename)
+                                _record_created_file(
+                                    created_file_paths,
+                                    TestFile.objects.create(
+                                        test_data=test_data,
+                                        original_filename=file_name,
+                                        saved_filename=saved_filename,
+                                        file_path=content_file
+                                    )
+                                )
+                            
+                            created_count += 1
+        except ValueError as exc:
+            _delete_file_paths(created_file_paths)
+            return error_response(str(exc), status.HTTP_400_BAD_REQUEST)
+        except BadZipFile:
+            _delete_file_paths(created_file_paths)
+            return error_response('zip文件格式不正确', status.HTTP_400_BAD_REQUEST)
+        except Exception:
+            _delete_file_paths(created_file_paths)
+            return error_response('数据包上传失败', status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         result = {
             'created_count': created_count,
@@ -560,34 +596,50 @@ class TestDataSetViewSet(viewsets.ModelViewSet):
         created_count = 0
         file_count = 0
         errors = []
+        created_file_paths = []
 
-        for item in validated_items:
-            file_key = item['file_key']
-            upload_file = file_map.get(file_key)
-            if not upload_file:
-                errors.append(f'文件未找到: {file_key}')
-                continue
-
-            test_data = TestData.objects.create(
-                sample=item['resolved_sample'],
-                test_type=item['resolved_test_type'],
-                test_date=item.get('test_date'),
-                instrument=item.get('instrument', ''),
-                tester=item.get('tester', ''),
-                notes=item.get('notes', '')
+        missing_file_keys = [
+            item['file_key'] for item in validated_items
+            if item['file_key'] not in file_map
+        ]
+        if missing_file_keys:
+            return error_response(
+                f"文件未找到: {', '.join(missing_file_keys)}",
+                status.HTTP_400_BAD_REQUEST
             )
 
-            ext = os.path.splitext(upload_file.name)[1]
-            saved_filename = f"{uuid.uuid4()}{ext}"
-            TestFile.objects.create(
-                test_data=test_data,
-                original_filename=upload_file.name,
-                saved_filename=saved_filename,
-                file_path=upload_file
-            )
+        try:
+            with transaction.atomic():
+                for item in validated_items:
+                    file_key = item['file_key']
+                    upload_file = file_map[file_key]
 
-            created_count += 1
-            file_count += 1
+                    test_data = TestData.objects.create(
+                        sample=item['resolved_sample'],
+                        test_type=item['resolved_test_type'],
+                        test_date=item.get('test_date'),
+                        instrument=item.get('instrument', ''),
+                        tester=item.get('tester', ''),
+                        notes=item.get('notes', '')
+                    )
+
+                    ext = os.path.splitext(upload_file.name)[1]
+                    saved_filename = f"{uuid.uuid4()}{ext}"
+                    _record_created_file(
+                        created_file_paths,
+                        TestFile.objects.create(
+                            test_data=test_data,
+                            original_filename=upload_file.name,
+                            saved_filename=saved_filename,
+                            file_path=upload_file
+                        )
+                    )
+
+                    created_count += 1
+                    file_count += 1
+        except Exception:
+            _delete_file_paths(created_file_paths)
+            return error_response('批量上传失败', status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         result = {
             'created_count': created_count,
