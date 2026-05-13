@@ -12,8 +12,10 @@ set "VENV_PYTHON=%PROJECT_DIR%\venv\Scripts\python.exe"
 set "LOG_DIR=%PROJECT_DIR%\logs"
 set "BACKEND_LOG=%LOG_DIR%\backend.log"
 set "FRONTEND_LOG=%LOG_DIR%\frontend.log"
-set "BACKEND_PORT=3000"
-set "FRONTEND_PORT=8000"
+set "BACKEND_HOST=127.0.0.1"
+set "FRONTEND_HOST=127.0.0.1"
+set "BACKEND_PORT=8000"
+set "FRONTEND_PORT=5173"
 set "BACKEND_URL=http://127.0.0.1:%BACKEND_PORT%"
 set "FRONTEND_URL=http://127.0.0.1:%FRONTEND_PORT%"
 
@@ -35,6 +37,12 @@ if not exist "%VENV_PYTHON%" (
 where npm >nul 2>nul
 if errorlevel 1 (
   echo [ERROR] npm was not found in PATH.
+  goto :end
+)
+
+if not exist "%FRONTEND_DIR%\node_modules" (
+  echo [ERROR] frontend\node_modules was not found.
+  echo         Run "npm install" in %FRONTEND_DIR% first.
   goto :end
 )
 
@@ -73,11 +81,11 @@ if errorlevel 1 goto :end
 
 echo.
 echo [3/4] Starting backend on port %BACKEND_PORT%...
-start "EDMS-Backend" /min cmd /c "cd /d "%BACKEND_DIR%" && "%VENV_PYTHON%" manage.py runserver %BACKEND_PORT% 1>>"%BACKEND_LOG%" 2>>&1"
+start "EDMS-Backend" /min cmd /c "cd /d "%BACKEND_DIR%" && "%VENV_PYTHON%" manage.py runserver %BACKEND_HOST%:%BACKEND_PORT% 1>>"%BACKEND_LOG%" 2>>&1"
 timeout /t 2 /nobreak >nul
 
 echo [4/4] Starting frontend on port %FRONTEND_PORT%...
-start "EDMS-Frontend" /min cmd /c "cd /d "%FRONTEND_DIR%" && npm run dev -- --host 127.0.0.1 --port %FRONTEND_PORT% 1>>"%FRONTEND_LOG%" 2>>&1"
+start "EDMS-Frontend" /min cmd /c "cd /d "%FRONTEND_DIR%" && npm run dev -- --host %FRONTEND_HOST% --port %FRONTEND_PORT% 1>>"%FRONTEND_LOG%" 2>>&1"
 timeout /t 5 /nobreak >nul
 start "" "%FRONTEND_URL%"
 
@@ -87,6 +95,14 @@ echo Frontend: %FRONTEND_URL%
 echo Logs    : %LOG_DIR%
 pause
 endlocal
+exit /b 0
+
+:end
+echo.
+echo Startup aborted.
+pause
+endlocal
+exit /b 1
 
 :check_path
 if not exist %~1 (
